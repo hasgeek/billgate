@@ -67,12 +67,13 @@ def disclaimer():
 @app.route('/login')
 # @lastuser.loginhandler
 def login():
-    pass
+    return "Can't login yet"
+
 
 @app.route('/logout')
 # @lastuser.logouthandler
 def logout():
-    pass
+    return "You weren't logged in"
 
 # --- Template filters --------------------------------------------------------
 
