@@ -37,14 +37,14 @@
   <div id="container" class="container">
     <header>
       <div id="logo"><a href="{{ url_for('index')|e }}">Home</a></div>
-      <ul class="usertools">
+      {# <ul class="usertools">
         {% if g.user -%}
           <li class="profile"><a href="{{ url_for('profile_current')|e }}">{{ g.user.fullname }}</a></li>
           <li><a href="{{ url_for('logout') }}">Logout</a></li>
         {% else %}
           <li><a href="{{ url_for('login') }}">Login</a></li>
         {% endif %}      
-      </ul>
+      </ul> #}
       {% block header %}{% endblock %}
     </header>
     <div id="main">
@@ -66,7 +66,7 @@
       <p>
         <strong>HasGeek Media LLP</strong> · No 141/142, 2nd Cross,
         Pai Layout, Hulimavu Gate, Bannerghatta Road, Bangalore - 560 076.
-        Support: {{ "billing@hasgeek.in"|scrubemail(('z', 'y')) }}
+        Support: {{ "support@hasgeek.in"|scrubemail(('z', 'y')) }}, +91 (80) 4130 5704.
       </p>
       {% endblock %}
     </div>
