@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #: The title of this site
-SITE_TITLE='LastUser'
+SITE_TITLE='HasGeek Billing'
 #: Support contact email
 SITE_SUPPORT_EMAIL = 'test@example.com'
 #: TypeKit code for fonts
@@ -14,6 +14,12 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
 SECRET_KEY = 'make this something random'
 #: Timezone
 TIMEZONE = 'Asia/Calcutta'
+#: LastUser server
+LASTUSER_SERVER = 'https://login.hasgeek.in/'
+#: LastUser client id
+LASTUSER_CLIENT_ID = ''
+#: LastUser client secret
+LASTUSER_CLIENT_SECRET = ''
 #: Mail settings
 #: MAIL_FAIL_SILENTLY : default True
 #: MAIL_SERVER : default 'localhost'

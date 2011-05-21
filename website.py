@@ -1,15 +1,16 @@
 import re
 
 from flask import (Flask, render_template, redirect, url_for, abort, g, Markup,
-    escape)
+    escape, flash, request)
 from flaskext.assets import Environment, Bundle
 from flaskext.sqlalchemy import SQLAlchemy
-# from flaskext.lastuser import LastUser
+from flaskext.lastuser import LastUser
 
 app = Flask(__name__)
 db = SQLAlchemy(app)
 assets = Environment(app)
-# lastuser = LastUser(app)
+lastuser = LastUser()
+
 
 # --- Configuration -----------------------------------------------------------
 
@@ -21,6 +22,7 @@ except ImportError:
     print >> sys.stderr, "Please create a settings.py with the necessary settings. See settings-sample.py."
     sys.exit()
 
+lastuser.init_app(app)
 
 # --- Assets ------------------------------------------------------------------
 
@@ -65,15 +67,33 @@ def disclaimer():
 
 
 @app.route('/login')
-# @lastuser.loginhandler
+@lastuser.loginhandler
 def login():
-    return "Can't login yet"
+    return {'scope': 'id email'}
 
 
 @app.route('/logout')
-# @lastuser.logouthandler
+@lastuser.logouthandler
 def logout():
-    return "You weren't logged in"
+    return redirect(request.args.get('next') or url_for('index'))
+
+
+@app.route('/redirect')
+@lastuser.authhandler
+def lastuserauth():
+    flash("You have been logged in", category='info')
+    return redirect(request.args.get('next') or url_for('index'))
+
+
+@lastuser.autherrorhandler
+def lastuser_error(error, error_description=None, error_uri=None):
+    if error == 'access_denied':
+        flash("You denied the request to login", category='error')
+        return redirect(request.args.get('next') or url_for('index'))
+    return render_template("autherror.html",
+        error=error,
+        error_description=error_description,
+        error_uri=error_uri)
 
 # --- Template filters --------------------------------------------------------
 
