@@ -105,7 +105,6 @@ def logout():
 def lastuserauth():
     # Save the user object
     db.session.commit()
-    flash("You are now logged in", category='info')
     return redirect(request.args.get('next') or url_for('index'))
 
 
