@@ -5,6 +5,7 @@ from flask import (Flask, render_template, redirect, url_for, abort, g, Markup,
 from flaskext.assets import Environment, Bundle
 from flaskext.sqlalchemy import SQLAlchemy
 from flaskext.lastuser import LastUser
+from flaskext.lastuser.sqlalchemy import UserBase, UserManager
 
 app = Flask(__name__)
 db = SQLAlchemy(app)
@@ -22,7 +23,6 @@ except ImportError:
     print >> sys.stderr, "Please create a settings.py with the necessary settings. See settings-sample.py."
     sys.exit()
 
-lastuser.init_app(app)
 
 # --- Assets ------------------------------------------------------------------
 
@@ -32,6 +32,27 @@ js = Bundle('js/libs/jquery-1.5.1.min.js',
             filters='jsmin', output='js/packed.js')
 
 assets.register('js_all', js)
+
+
+# --- Models ------------------------------------------------------------------
+
+class User(db.Model, UserBase):
+    """
+    User object.
+    """
+    pass
+
+class BillingAddress(db.Model):
+    """
+    Billing address.
+    """
+    id = db.Column(db.Integer, primary_key=True)
+
+
+# --- LastUser configuration --------------------------------------------------
+
+lastuser.init_app(app)
+lastuser.init_usermanager(UserManager(db, User))
 
 
 # --- Routes ------------------------------------------------------------------
@@ -67,25 +88,28 @@ def disclaimer():
 
 
 @app.route('/login')
-@lastuser.loginhandler
+@lastuser.login_handler
 def login():
     return {'scope': 'id email'}
 
 
 @app.route('/logout')
-@lastuser.logouthandler
+@lastuser.logout_handler
 def logout():
-    return redirect(request.args.get('next') or url_for('index'))
+    flash("You are now logged out", category='info')
+    return request.args.get('next') or url_for('index')
 
 
 @app.route('/redirect')
-@lastuser.authhandler
+@lastuser.auth_handler
 def lastuserauth():
-    flash("You have been logged in", category='info')
+    # Save the user object
+    db.session.commit()
+    flash("You are now logged in", category='info')
     return redirect(request.args.get('next') or url_for('index'))
 
 
-@lastuser.autherrorhandler
+@lastuser.auth_error_handler
 def lastuser_error(error, error_description=None, error_uri=None):
     if error == 'access_denied':
         flash("You denied the request to login", category='error')
@@ -94,6 +118,7 @@ def lastuser_error(error, error_description=None, error_uri=None):
         error=error,
         error_description=error_description,
         error_uri=error_uri)
+
 
 # --- Template filters --------------------------------------------------------
 
@@ -139,4 +164,5 @@ def scrubemail_filter(data, css_junk=''):
 
 
 if __name__ == '__main__':
+    db.create_all()
     app.run(port=4000, debug=True)
