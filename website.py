@@ -4,6 +4,7 @@ from flask import (Flask, render_template, redirect, url_for, abort, g, Markup,
     escape, flash, request)
 from flaskext.assets import Environment, Bundle
 from flaskext.sqlalchemy import SQLAlchemy
+import flaskext.wtf as wtf
 from flaskext.lastuser import LastUser
 from flaskext.lastuser.sqlalchemy import UserBase, UserManager
 
@@ -33,6 +34,12 @@ js = Bundle('js/libs/jquery-1.5.1.min.js',
 
 assets.register('js_all', js)
 
+# --- Constants ---------------------------------------------------------------
+
+class ADDRESSTYPE:
+    BILLING = 0
+    SHIPPING = 1
+
 
 # --- Models ------------------------------------------------------------------
 
@@ -42,11 +49,30 @@ class User(db.Model, UserBase):
     """
     pass
 
-class BillingAddress(db.Model):
+
+class PostalAddress(db.Model):
     """
     Billing address.
     """
+    __tablename__ = 'postaladdress'
     id = db.Column(db.Integer, primary_key=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=db.func.now())
+    updated_at = db.Column(db.DateTime, nullable=False, default=db.func.now(), onupdate=db.func.now())
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship(User, primaryjoin=user_id == User.id, backref='addresses')
+
+    address_type = db.Column(db.Integer, nullable=False, default=ADDRESSTYPE.BILLING)
+    label = db.Column(db.Unicode(80), nullable=False, default=u'')
+    name = db.Column(db.Unicode(80), nullable=False)
+    address = db.Column(db.Unicode(80), nullable=False)
+    address2 = db.Column(db.Unicode(80), nullable=False, default=u'')
+    address3 = db.Column(db.Unicode(80), nullable=False, default=u'')
+    city = db.Column(db.Unicode(30), nullable=False)
+    state = db.Column(db.Unicode(30), nullable=False)
+    postal_code = db.Column(db.Unicode(10), nullable=False)
+    country = db.Column(db.Unicode(30), nullable=False)
+    phone = db.Column(db.Unicode(30), nullable=False)
+    email = db.Column(db.Unicode(80), nullable=False)
 
 
 # --- LastUser configuration --------------------------------------------------
@@ -54,8 +80,27 @@ class BillingAddress(db.Model):
 lastuser.init_app(app)
 lastuser.init_usermanager(UserManager(db, User))
 
+# --- Forms -------------------------------------------------------------------
 
-# --- Routes ------------------------------------------------------------------
+class PostalAddressForm(wtf.Form):
+    name = wtf.TextField('Your name', validators=[wtf.Required()])
+    address = wtf.TextField('Address', validators=[wtf.Required()])
+    address2 = wtf.TextField('Address')
+    address3 = wtf.TextField('Address')
+    city = wtf.TextField('City/District', validators=[wtf.Required()])
+    state = wtf.TextField('State/Province', validators=[wtf.Required()])
+    postal_code = wtf.TextField('Postal code (PIN/ZIP)', validators=[wtf.Required()])
+    country = wtf.SelectField('Country', validators=[wtf.Required()], default='IND',
+        choices=app.config.get('COUNTRY_LIST', []))
+    phone = wtf.TextField('Phone', validators=[wtf.Required()],
+        description="The telephone number associated with this address")
+    label = wtf.TextField('Label',
+        description="Give this address an optional label. If you have multiple addresses, "
+                    "the label will be shown to help you choose")
+    address_type = wtf.RadioField('This is a', coerce=int, default=0, validators=[wtf.Required()],
+        choices = [(ADDRESSTYPE.BILLING, "Billing address"), (ADDRESSTYPE.SHIPPING, "Shipping address")])
+
+# --- Routes: base URLs -------------------------------------------------------
 
 @app.route('/')
 def index():
@@ -67,30 +112,12 @@ def favicon():
     return redirect(url_for('static', filename='img/favicon.ico'), code=301)
 
 
-@app.route('/privacy')
-def privacy():
-    return render_template('privacy.html', title="Privacy Policy")
-
-
-@app.route('/terms')
-def terms():
-    return render_template('terms.html', title="Terms & Conditions")
-
-
-@app.route('/refunds')
-def refunds():
-    return render_template('refunds.html', title="Cancellation & Refund Policy")
-
-
-@app.route('/disclaimer')
-def disclaimer():
-    return render_template('disclaimer.html', title="Disclaimer")
-
+# --- Routes: login/logout ----------------------------------------------------
 
 @app.route('/login')
 @lastuser.login_handler
 def login():
-    return {'scope': 'id email'}
+    return {'scope': 'id email address address/new invoice'}
 
 
 @app.route('/logout')
@@ -117,6 +144,54 @@ def lastuser_error(error, error_description=None, error_uri=None):
         error=error,
         error_description=error_description,
         error_uri=error_uri)
+
+
+# --- Routes: documentation ---------------------------------------------------
+
+@app.route('/privacy')
+def privacy():
+    return render_template('privacy.html', title="Privacy Policy")
+
+
+@app.route('/terms')
+def terms():
+    return render_template('terms.html', title="Terms & Conditions")
+
+
+@app.route('/refunds')
+def refunds():
+    return render_template('refunds.html', title="Cancellation & Refund Policy")
+
+
+@app.route('/disclaimer')
+def disclaimer():
+    return render_template('disclaimer.html', title="Disclaimer")
+
+
+# --- Routes: site admin ------------------------------------------------------
+
+@app.route('/admin')
+@lastuser.requires_permission('siteadmin')
+def admin():
+    return "Nothing here yet"
+
+
+# --- Routes: account ---------------------------------------------------------
+
+@app.route('/account')
+@lastuser.requires_login
+def account():
+    return render_template('account.html')
+
+
+@app.route('/address')
+@lastuser.requires_login
+def address():
+    form = PostalAddressForm()
+    if form.validate_on_submit():
+        # Save form
+        return redirect(url_for('account'))
+    return render_template('autoform.html', title='Postal Address', form=form)
 
 
 # --- Template filters --------------------------------------------------------

@@ -39,7 +39,7 @@
       <div id="logo"><a href="{{ url_for('index')|e }}">Home</a></div>
       <ul class="usertools">
         {% if g.user -%}
-          <li class="profile">{{ g.user.fullname }}</li>
+          <li class="profile"><a href="{{ url_for('account') }}">{{ g.user.fullname }}</a></li>
           <li><a href="{{ url_for('logout') }}">Logout</a></li>
         {% else %}
           <li><a href="{{ url_for('login') }}">Login</a></li>
@@ -80,13 +80,6 @@
     <script src="{{ url_for('static', filename='js/libs/dd_belatedpng.js') }}"></script>
     <script> DD_belatedPNG.fix('img, .png_bg'); </script>
   <![endif]-->
-
-  {% if config['DEBUG'] %}
-    <!-- yui profiler and profileviewer - remove for production -->
-    <script src="{{ url_for('static', filename='js/profiling/yahoo-profiling.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/profiling/config.js') }}"></script>
-    <!-- end profiling code -->
-  {% endif %}
 
   {% if config['GA_CODE'] and not config['DEBUG'] %}
     <script type="text/javascript">
