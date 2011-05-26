@@ -117,7 +117,7 @@ def favicon():
 @app.route('/login')
 @lastuser.login_handler
 def login():
-    return {'scope': 'id email address address/new invoice'}
+    return {'scope': 'id email'}
 
 
 @app.route('/logout')
