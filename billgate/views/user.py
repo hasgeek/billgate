@@ -2,9 +2,9 @@ from billgate import app
 
 from flask import render_template
 
-@app.route('/account')
-def account():
-    return render_template('account.html')
+@app.route('/profile')
+def profile():
+    return render_template('profile.html')
 
 
 @app.route('/address')

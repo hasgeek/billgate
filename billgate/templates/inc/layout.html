@@ -20,7 +20,7 @@
   <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}"/>
 
   <!-- Stylesheets -->
-  <link href="{{ url_for('static', filename='css/screen.css') }}?v=1" media="screen, projection" rel="stylesheet" type="text/css" />
+  <link href="{{ url_for('static', filename='css/screen.css') }}?v=2" media="screen, projection" rel="stylesheet" type="text/css" />
   <link href="{{ url_for('static', filename='css/print.css') }}?v=1" media="print" rel="stylesheet" type="text/css" />
   <!--[if IE]>
       <link href="{{ url_for('static', filename='css/ie.css') }}?v=1" media="screen, projection" rel="stylesheet" type="text/css" />
@@ -36,10 +36,13 @@
 <body>
   <div id="container" class="container">
     <header>
-      <div id="logo"><a href="{{ url_for('index')|e }}">Home</a></div>
+      <div id="logo"><a href="{{ url_for('index') }}">Home</a></div>
+      {# {% if g.avatar_url %}
+        <a href="{{ url_for('profile') }}"><img class="avatar login_avatar" src="{{ g.avatar_url }}" alt="Avatar"/></a>
+      {% endif %} #}
       <ul class="usertools">
         {% if g.user -%}
-          <li class="profile"><a href="{{ url_for('account') }}">{{ g.user.fullname }}</a></li>
+          <li class="profile"><a href="{{ url_for('profile') }}">{{ g.user.fullname }}</a></li>
           <li><a href="{{ url_for('logout') }}">Logout</a></li>
         {% else %}
           <li><a href="{{ url_for('login') }}">Login</a></li>
@@ -68,6 +71,7 @@
         Pai Layout, Hulimavu Gate, Bannerghatta Road, Bangalore - 560 076.
         Support: {{ "support@hasgeek.in"|scrubemail(('z', 'y')) }}, +91 (80) 4130 5704.
       </p>
+        {{ config['MESSAGE_FOOTER'] }}
       {% endblock %}
     </div>
   </footer>
