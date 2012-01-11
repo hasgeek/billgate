@@ -1,0 +1,5 @@
+{% from 'macros.html' import renderform, ajaxform %}
+{{ renderform(ebsform, 'ebsform', 'Register') }}
+{% if ajax_re_register %}
+  {{ ajaxform('regform', request, False) }}
+{% endif %}
