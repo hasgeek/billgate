@@ -7,7 +7,7 @@ def profile():
     return render_template('profile.html')
 
 
-@app.route('/address')
+@app.route('/foobar')
 def address():
     form = PostalAddressForm()
     if form.validate_on_submit():

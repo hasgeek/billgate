@@ -1,0 +1,27 @@
+{% extends "inc/layout.html" %}
+{% from 'macros.html' import renderform %}
+{% block content %}
+<p>Hi, {{ user.fullname }}, please select a shipping address or enter a new one.</p>
+{% if addresses %}
+<div id="addressblock">
+{% for address in addresses %}
+<div class="address">
+{{ address.name }}<br />
+{{ address.address1 }}<br />
+{{ address.address2 }}<br />
+{{ address.city }}<br />
+{{ address.state }}<br />
+{{ address.postal_code }}<br />
+{{ address.country }}<br />
+{{ address.phone }}<br />
+<p><a href="#">Edit</span></a> <a href="#">Delete</span></a></p>
+<p><a href="{{ url_for('select_existing_address', aid=address.hashkey) }}">Use this address</span></a></p>
+</div>
+{% endfor %}
+</div>
+<div class="clear"></div>
+{% else %}
+<p>You have no addresses yet.</p>
+{% endif %}
+{{ renderform(form, 'addressform', 'Use this address') }}
+{% endblock %}

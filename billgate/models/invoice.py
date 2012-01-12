@@ -1,12 +1,19 @@
-from mongoengine import Document, StringField, IntField, ReferenceField
+from mongoengine import (
+    DateTimeField,
+    Document,
+    EmailField,
+    IntField,
+    ReferenceField,
+    StringField,
+)
 from billgate.models import User
 
 class Invoice(Document):
     name = StringField(max_length=80, required=True)
     email = EmailField(required=True)
     telephone = StringField(max_length=20, required=True)
-    user = StringField(max_length=80, required=True)
-    date = ReferenceField(User)
+    date = DateTimeField(required=True)
+    user = ReferenceField(User)
     refno = StringField(max_length=80, required=True)
     amount = IntField(min_value=0, required=True)
     description = StringField(max_length=80, required=True)

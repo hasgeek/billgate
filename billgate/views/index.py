@@ -1,11 +1,9 @@
 from billgate import app
-from billgate.forms import EbsForm
-from flask import render_template
+from flask import render_template, redirect
 
 @app.route('/')
 def index():
     context = {
-        'ebsform': EbsForm(),
     }
     return render_template('index.html', **context)
 
