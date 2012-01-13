@@ -8,8 +8,6 @@ SITE_SUPPORT_EMAIL = 'test@example.com'
 TYPEKIT_CODE=''
 #: Google Analytics code UA-XXXXXX-X
 GA_CODE=''
-#: Database backend
-SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
 #: Secret key
 SECRET_KEY = 'make this something random'
 #: Timezone
@@ -40,3 +38,10 @@ ADMINS=[]
 LOGFILE='error.log'
 #: Use SSL for some URLs
 USE_SSL=False
+#: Database backend
+MONGO_DB = 'billgate'
+MONGO_CONN = {
+    'port': 27017,
+}
+#: EBS User ID
+EBS_ACCOUNT=0000
