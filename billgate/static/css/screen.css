@@ -314,7 +314,7 @@ footer #footer_content {
   text-indent: -119988px;
   overflow: hidden;
   text-align: left;
-  background-image: url('/billgate/static/img/logo.png?1326066755');
+  background-image: url('../img/logo.png?1326369762');
   background-repeat: no-repeat;
   background-position: 50% 50%;
   width: 100px;
@@ -576,7 +576,7 @@ img.login_avatar {
   text-indent: -119988px;
   overflow: hidden;
   text-align: left;
-  background-image: url('/billgate/static/img/home.png?1323953205');
+  background-image: url('../img/home.png?1326369762');
   background-repeat: no-repeat;
   background-position: 12 22;
   width: 12px;
@@ -839,7 +839,7 @@ select {
 }
 
 input[name="openid"] {
-  background: url('/billgate/static/img/openid.png?1326066755') 4px no-repeat;
+  background: url('../img/openid.png?1326369762') 4px no-repeat;
   width: 230px;
   padding-left: 25px;
 }
@@ -899,7 +899,7 @@ input[type="submit"].delete:hover {
 
 span.loading {
   display: inline-block;
-  background: url('/billgate/static/img/ajax-loader.gif?1326066755') center no-repeat;
+  background: url('../img/ajax-loader.gif?1326369762') center no-repeat;
   width: 16px;
   height: 16px;
 }
@@ -1551,4 +1551,17 @@ ul.cardset li a .body, ul.cardset li a:hover .body, ul.cardset li a:active .body
 
 .clear {
   clear: both;
+}
+
+table td {
+  border: 1px solid black;
+  padding: 1em;
+}
+
+.datatype {
+  color: #816894;
+}
+
+.datavalue {
+  color: #df5e0e;
 }

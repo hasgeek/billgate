@@ -2,7 +2,8 @@ from billgate import app
 from billgate.models import Address
 from billgate.views.login import lastuser
 from billgate.forms import AddressForm
-from flask import render_template, g, flash, redirect, url_for, session, request
+from flask import render_template, g, flash, redirect, url_for, request
+from flask import session
 
 @app.route('/address')
 @lastuser.requires_login
@@ -13,6 +14,7 @@ def select_address(form=None):
         'user': g.user,
         'addresses': Address.objects(user=g.user),
         'form': form,
+        'title': 'Select Billing Address',
     }
     return render_template('address.html', **context)
 
@@ -35,7 +37,7 @@ def process_select_address():
 @lastuser.requires_login
 def select_existing_address(aid):
     address = Address.objects(hashkey=aid).first()
-    session['address'] = getattr(address, hashkey, None)
+    session['address'] = getattr(address, 'hashkey', None)
     return redirect(url_for('select_payment'))
 
 @app.route('/address/delete/<aid>')
@@ -58,6 +60,7 @@ def edit_address(aid, form=None):
         form = AddressForm(obj=address)
     context = {
         'form': form,
+        'title': 'Edit Address',
     }
     return render_template('edit_address.html', **context)
 
@@ -79,8 +82,20 @@ def process_edit_address(aid):
 @app.route('/payment')
 @lastuser.requires_login
 def select_payment():
+    aid = session.get('address', None)
+    print aid
+    if aid is None:
+        return redirect(url_for('select_address'))
+    address = Address.objects(hashkey=aid).first()
+    print address.address1
     context = {
         'user': g.user,
-        'address': Address.objects(hashkey=session['address']).first(),
+        'address': address,
+        'title': 'Confirm Details',
     }
     return render_template('payment.html', **context)
+
+@app.route('/response/ebs')
+@lastuser.requires_login
+def ebs_response():
+    return redirect('/')

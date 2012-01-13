@@ -1,7 +1,7 @@
 {% extends "inc/layout.html" %}
 {% from 'macros.html' import renderform %}
 {% block content %}
-<p>Hi, {{ user.fullname }}, please select a shipping address or enter a new one.</p>
+<p>Hi, {{ user.fullname }}, please select a billing address or enter a new one.</p>
 {% if addresses %}
 <div id="addressblock">
 {% for address in addresses %}

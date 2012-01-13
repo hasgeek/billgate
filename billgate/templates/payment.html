@@ -1,5 +1,68 @@
 {% extends "inc/layout.html" %}
-{% from 'macros.html' import renderform %}
 {% block content %}
-<p>Hi, {{ user.fullname }}, please select mode of payment</p>
+<table>
+
+<tr>
+<td class="datatype">Amount</td> <td class="datavalue">100 ₹</td>
+</tr>
+
+<tr>
+<td class="datatype">Name</td> <td class="datavalue">{{ address.name }}</td>
+</tr>
+
+<tr>
+<td class="datatype">Address</td> <td class="datavalue">{{ ' '.join([address.address1, address.address2]) }}</td>
+</tr>
+
+<tr>
+<td class="datatype">City</td> <td class="datavalue">{{ address.city }}</td>
+</tr>
+
+<tr>
+<td class="datatype">State</td> <td class="datavalue">{{ address.state }}</td>
+</tr>
+
+<tr>
+<td class="datatype">Country</td> <td class="datavalue">{{ address.country }}</td>
+</tr>
+
+<tr>
+<td class="datatype">Postal Code</td> <td class="datavalue">{{ address.postal_code }}</td>
+</tr>
+
+<tr>
+<td class="datatype">Email</td> <td class="datavalue">{{ user.email }}</td>
+</tr>
+
+<tr>
+<td class="datatype">Telephone</td> <td class="datavalue">{{ address.phone }}</td>
+</tr>
+
+</table>
+
+<form  method="post" action="https://secure.ebs.in/pg/ma/sale/pay/" name="frmTransaction" id="frmTransaction">
+<input name="account_id" type="hidden" value="{{ config['EBS_ACCOUNT'] }}" />
+<input name="return_url" type="hidden" value="{{ url_for('ebs_response', _external=True)}}?DR={DR}" />
+<input name="mode" type="hidden" value="TEST" />
+<input name="reference_no" type="hidden" value="123" />
+<input name="amount" type="hidden" value="100" />
+<input name="description" type="hidden" value="Testing Payment" />
+<input name="name" type="text" value="{{ address.name }}" />
+<input name="address" type="text" value="{{ ' '.join([address.address1, address.address2]) }}" />
+<input name="city" type="text" value="{{ address.city }}" />
+<input name="state" type="text" value="{{ address.state }}" />
+<input name="postal_code" type="text" value="{{ address.postal_code }}" />
+<input name="country" type="text" value="{{ address.country }}" />
+<input name="email" type="text" value="{{ user.email }}" />
+<input name="phone" type="text" value="{{ address.phone }}" />
+<input name="ship_name" type="text" value="{{ address.name }}" />
+<input name="ship_address" type="text" value="{{ ' '.join([address.address1, address.address2]) }}" />
+<input name="ship_city" type="text" value="{{ address.city }}" />
+<input name="ship_state" type="text" value="{{ address.state }}" />
+<input name="ship_postal_code" type="text" value="{{ address.postal_code }}" />
+<input name="ship_country" type="text" value="{{ address.country }}" />
+<input name="ship_phone" type="text" value="{{ address.phone }}" />
+
+<input type="submit" value="Confirm and Pay" />
+</form>
 {% endblock %}

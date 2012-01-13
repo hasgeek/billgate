@@ -7,4 +7,4 @@ images_dir = "billgate/static/img"
 javascripts_dir = "billgate/static/js"
 line_comments = false
 # To enable relative paths to assets via compass helper functions. Uncomment:
-# relative_assets = true
+relative_assets = true
