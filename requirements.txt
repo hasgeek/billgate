@@ -1,6 +1,5 @@
 Flask
 Flask-Assets
-Flask-Sqlalchemy
 Flask-Wtf
 jsmin
 https://github.com/hasgeek/flask-lastuser/zipball/master
