@@ -1,9 +1,12 @@
 from billgate import app
-from billgate.models import Address
+from billgate.models import Address, Payment
 from billgate.views.login import lastuser
 from billgate.forms import AddressForm
 from flask import render_template, g, flash, redirect, url_for, request
 from flask import session
+from base64 import b64decode
+from billgate.rc4 import crypt
+from werkzeug.urls import url_quote_plus
 
 @app.route('/address')
 @lastuser.requires_login
@@ -98,4 +101,17 @@ def select_payment():
 @app.route('/response/ebs')
 @lastuser.requires_login
 def ebs_response():
-    return redirect('/')
+    data = b64decode(request.query_string[2:])
+    decrypted = crypt(data, app.config['EBS_KEY'])
+    response_split = {}
+    for item in decrypted.split('&'):
+        oneitem = item.split('=')
+        response_split[oneitem[0]] = oneitem[1]
+    pay = Payment()
+    pay.response = response_split
+    pay.save()
+    context = {
+        'data': data,
+        'response': response_split,
+    }
+    return render_template('thanks.html', **context)
