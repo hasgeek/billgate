@@ -5,3 +5,4 @@ jsmin
 https://github.com/hasgeek/flask-lastuser/zipball/master
 https://github.com/hasgeek/coaster/zipball/master
 mongoengine
+blinker
