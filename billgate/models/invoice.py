@@ -5,6 +5,7 @@ from mongoengine import (
     IntField,
     ReferenceField,
     StringField,
+    signals
 )
 from billgate.models import User
 from datetime import datetime
@@ -32,3 +33,10 @@ class Invoice(Document):
     shipping_country = StringField(max_length=2, required=True)
     
     created_at = DateTimeField(default=datetime.now, required=True)
+    updated_at = DateTimeField(required=True)
+
+    @classmethod
+    def pre_save(cls, sender, document, **kwargs):
+        document.updated_at = datetime.now()
+    
+signals.pre_save.connect(Invoice.pre_save, sender=Invoice)

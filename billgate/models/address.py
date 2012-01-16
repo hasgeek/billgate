@@ -1,5 +1,13 @@
-from mongoengine import DateTimeField, Document, ReferenceField, StringField
 from billgate.models import User
+
+from mongoengine import (
+    DateTimeField,
+    Document,
+    ReferenceField,
+    signals,
+    StringField,
+)
+from mongoengine import signals
 from uuid import uuid4
 from datetime import datetime
 
@@ -16,3 +24,10 @@ class Address(Document):
     user = ReferenceField(User)
     
     created_at = DateTimeField(default=datetime.now, required=True)
+    updated_at = DateTimeField(required=True)
+    
+    @classmethod
+    def pre_save(cls, sender, document, **kwargs):
+        document.updated_at = datetime.now()
+    
+signals.pre_save.connect(Address.pre_save, sender=Address)
