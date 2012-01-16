@@ -1,5 +1,5 @@
 from billgate import app
-from billgate.models import db, User
+from billgate.models import User
 from flask import redirect, request, url_for, Response, flash
 from flask.ext.lastuser import LastUser
 from flask.ext.lastuser.mongoengine import UserManager
