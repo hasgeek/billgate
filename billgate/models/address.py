@@ -1,6 +1,7 @@
-from mongoengine import Document, ReferenceField, StringField
+from mongoengine import DateTimeField, Document, ReferenceField, StringField
 from billgate.models import User
 from uuid import uuid4
+from datetime import datetime
 
 class Address(Document):
     name = StringField(max_length=80, required=True)
@@ -13,3 +14,5 @@ class Address(Document):
     country = StringField(max_length=3, required=True)
     phone = StringField(max_length=50, required=True)
     user = ReferenceField(User)
+    
+    created_at = DateTimeField(default=datetime.now, required=True)

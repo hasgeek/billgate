@@ -7,6 +7,7 @@ from mongoengine import (
     StringField,
 )
 from billgate.models import User
+from datetime import datetime
 
 class Invoice(Document):
     name = StringField(max_length=80, required=True)
@@ -29,3 +30,5 @@ class Invoice(Document):
     shipping_city = StringField(max_length=80, required=True)
     shipping_state = StringField(max_length=80, required=True)
     shipping_country = StringField(max_length=2, required=True)
+    
+    created_at = DateTimeField(default=datetime.now, required=True)
