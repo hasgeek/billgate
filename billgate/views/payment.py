@@ -2,15 +2,19 @@ from billgate import app
 from billgate.models import Address, Payment
 from billgate.views.login import lastuser
 from billgate.forms import AddressForm
-from flask import render_template, g, flash, redirect, url_for, request
+from flask import render_template, g, flash, json, redirect, url_for, request
 from flask import session
 from base64 import b64decode
 from billgate.rc4 import crypt
 from werkzeug.urls import url_quote_plus
 
+
 @app.route('/address')
 @lastuser.requires_login
 def select_address(form=None):
+    """
+    Select an Address or enter a new one.
+    """
     if form is None:
         form = AddressForm()
     context = {
@@ -24,6 +28,9 @@ def select_address(form=None):
 @app.route('/address', methods=['POST'])
 @lastuser.requires_login
 def process_select_address():
+    """
+    Process a new address.
+    """
     form = AddressForm()
     if form.validate_on_submit():
         address = Address()
@@ -39,6 +46,9 @@ def process_select_address():
 @app.route('/address/select/<aid>')
 @lastuser.requires_login
 def select_existing_address(aid):
+    """
+    Process an existing address.
+    """
     address = Address.objects(hashkey=aid).first()
     session['address'] = getattr(address, 'hashkey', None)
     return redirect(url_for('select_payment'))
@@ -46,6 +56,9 @@ def select_existing_address(aid):
 @app.route('/address/delete/<aid>')
 @lastuser.requires_login
 def delete_address(aid):
+    """
+    Delete an address
+    """
     address = Address.objects(hashkey=aid).first()
     address.delete()
     if request.referrer:
@@ -70,6 +83,9 @@ def edit_address(aid, form=None):
 @app.route('/address/edit/<aid>', methods=['POST'])
 @lastuser.requires_login
 def process_edit_address(aid):
+    """
+    Edit an existing address
+    """
     address = Address.objects(hashkey=aid).first()
     form = AddressForm(obj=address)
     if form.validate_on_submit():
@@ -85,6 +101,9 @@ def process_edit_address(aid):
 @app.route('/payment')
 @lastuser.requires_login
 def select_payment():
+    """
+    Confirm details and make a payment.
+    """
     aid = session.get('address', None)
     print aid
     if aid is None:
@@ -101,6 +120,9 @@ def select_payment():
 @app.route('/response/ebs')
 @lastuser.requires_login
 def ebs_response():
+    """
+    Process response from EBS payment gateway.
+    """
     data = b64decode(request.query_string[2:])
     decrypted = crypt(data, app.config['EBS_KEY'])
     response_split = {}
@@ -115,3 +137,10 @@ def ebs_response():
         'response': response_split,
     }
     return render_template('thanks.html', **context)
+
+@app.route('/invoice/create', methods=['POST'])
+@lastuser.requires_login
+def create_invoice():
+    data = json.loads(request.form['data'])
+    print data['data']
+    return request.form['data']
