@@ -3,31 +3,31 @@
 <table>
 
 <tr>
-<td class="datatype">Amount</td> <td class="datavalue">100 ₹</td>
+  <td class="datatype">Amount</td> <td class="datavalue">{{ invoice.amount}} ₹</td>
 </tr>
 
 <tr>
-<td class="datatype">Name</td> <td class="datavalue">{{ address.name }}</td>
+<td class="datatype">Name</td> <td class="datavalue">{{ invoice.name }}</td>
 </tr>
 
 <tr>
-<td class="datatype">Address</td> <td class="datavalue">{{ ' '.join([address.address1, address.address2]) }}</td>
+<td class="datatype">Address</td> <td class="datavalue">{{ ' '.join([invoice.billing_address1, invoice.billing_address2]) }}</td>
 </tr>
 
 <tr>
-<td class="datatype">City</td> <td class="datavalue">{{ address.city }}</td>
+<td class="datatype">City</td> <td class="datavalue">{{ invoice.billing_city }}</td>
 </tr>
 
 <tr>
-<td class="datatype">State</td> <td class="datavalue">{{ address.state }}</td>
+<td class="datatype">State</td> <td class="datavalue">{{ invoice.billing_state }}</td>
 </tr>
 
 <tr>
-<td class="datatype">Country</td> <td class="datavalue">{{ address.country }}</td>
+<td class="datatype">Country</td> <td class="datavalue">{{ invoice.billing_country }}</td>
 </tr>
 
 <tr>
-<td class="datatype">Postal Code</td> <td class="datavalue">{{ address.postal_code }}</td>
+<td class="datatype">Postal Code</td> <td class="datavalue">{{ invoice.shipping_postal_code }}</td>
 </tr>
 
 <tr>
@@ -35,7 +35,7 @@
 </tr>
 
 <tr>
-<td class="datatype">Telephone</td> <td class="datavalue">{{ address.phone }}</td>
+<td class="datatype">Telephone</td> <td class="datavalue">{{ invoice.telephone }}</td>
 </tr>
 
 </table>
@@ -45,23 +45,23 @@
 <input name="return_url" type="hidden" value="{{ url_for('ebs_response', _external=True)}}?DR={DR}" />
 <input name="mode" type="hidden" value="TEST" />
 <input name="reference_no" type="hidden" value="123" />
-<input name="amount" type="hidden" value="100" />
+<input name="amount" type="hidden" value="{{ invoice.amount }}" />
 <input name="description" type="hidden" value="Testing Payment" />
-<input name="name" type="hidden" value="{{ address.name }}" />
-<input name="address" type="hidden" value="{{ ' '.join([address.address1, address.address2]) }}" />
-<input name="city" type="hidden" value="{{ address.city }}" />
-<input name="state" type="hidden" value="{{ address.state }}" />
-<input name="postal_code" type="hidden" value="{{ address.postal_code }}" />
-<input name="country" type="hidden" value="{{ address.country }}" />
+<input name="name" type="hidden" value="{{ invoice.name }}" />
+<input name="address" type="hidden" value="{{ ' '.join([invoice.billing_address1, invoice.billing_address2]) }}" />
+<input name="city" type="hidden" value="{{ invoice.billing_city }}" />
+<input name="state" type="hidden" value="{{ invoice.billing_state }}" />
+<input name="postal_code" type="hidden" value="{{ invoice.billing_postal_code }}" />
+<input name="country" type="hidden" value="{{ invoice.billing_country }}" />
 <input name="email" type="hidden" value="{{ user.email }}" />
-<input name="phone" type="hidden" value="{{ address.phone }}" />
-<input name="ship_name" type="hidden" value="{{ address.name }}" />
-<input name="ship_address" type="hidden" value="{{ ' '.join([address.address1, address.address2]) }}" />
-<input name="ship_city" type="hidden" value="{{ address.city }}" />
-<input name="ship_state" type="hidden" value="{{ address.state }}" />
-<input name="ship_postal_code" type="hidden" value="{{ address.postal_code }}" />
-<input name="ship_country" type="hidden" value="{{ address.country }}" />
-<input name="ship_phone" type="hidden" value="{{ address.phone }}" />
+<input name="phone" type="hidden" value="{{ invoice.telephone }}" />
+<input name="ship_name" type="hidden" value="{{ invoice.name }}" />
+<input name="ship_address" type="hidden" value="{{ ' '.join([invoice.shipping_address1, invoice.shipping_address2]) }}" />
+<input name="ship_city" type="hidden" value="{{ invoice.shipping_city }}" />
+<input name="ship_state" type="hidden" value="{{ invoice.shipping_state }}" />
+<input name="ship_postal_code" type="hidden" value="{{ invoice.shipping_postal_code }}" />
+<input name="ship_country" type="hidden" value="{{ invoice.shipping_country }}" />
+<input name="ship_phone" type="hidden" value="{{ invoice.telephone }}" />
 
 <input type="submit" value="Confirm and Pay" />
 </form>

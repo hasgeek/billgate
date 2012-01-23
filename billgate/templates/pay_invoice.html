@@ -1,0 +1,38 @@
+{% extends "inc/layout.html" %}
+{% block content %}
+<table>
+<tr>
+    <td colspan="2">Number</td><td colspan="3">{{ invoice.id }}</td>
+</tr>
+<tr>
+    <td colspan="2">Name</td><td colspan="3">{{ invoice.user.fullname }}</td>
+</tr>
+<tr>
+    <td colspan="2">Date</td><td colspan="3">{{ invoice.date }}</td>
+</tr>
+<tr>
+    <td colspan="5"></td>
+</tr>
+<tr>
+    <td>Item Code</td>
+    <td>Description</td>
+    <td>Price</td>
+    <td>Quantity</td>
+    <td>Cost</td>
+</tr>
+{% for item in invoice.lineitems %}
+<tr>
+    <td>{{ item.id }}</td>
+    <td>{{ item.description }}</td>
+    <td>{{ item.cost }}</td>
+    <td>{{ item.quantity }}</td>
+    <td>{{ item.cost * item.quantity }}</td>
+</tr>
+{% endfor %}
+<tr>
+    <td colspan="4">Total</td>
+    <td>{{ invoice.amount }}</td>
+</tr>
+</table>
+<a href="{{ url_for('select_address', ino=invoice.id) }}">Select Billing Address</a>
+{% endblock %}
