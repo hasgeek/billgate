@@ -5,8 +5,7 @@ from flask.ext.lastuser import LastUser
 from flask.ext.lastuser.mongoengine import UserManager
 
 lastuser = LastUser(app)
-user = User()
-lastuser.init_usermanager(UserManager(user, User))
+lastuser.init_usermanager(UserManager(User))
 
 @app.route('/login')
 @lastuser.login_handler
@@ -24,7 +23,6 @@ def logout():
 @app.route('/login/redirect')
 @lastuser.auth_handler
 def lastuserauth():
-    # Save the user object
     return redirect(request.args.get('next') or url_for('index'))
     
 @lastuser.auth_error_handler
