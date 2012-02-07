@@ -19,7 +19,7 @@ LASTUSER_CLIENT_ID = ''
 #: LastUser client secret
 LASTUSER_CLIENT_SECRET = ''
 #: Country list
-from countries import countries as COUNTRY_LIST
+from billgate.countries import countries as COUNTRY_LIST
 #: Mail settings
 #: MAIL_FAIL_SILENTLY : default True
 #: MAIL_SERVER : default 'localhost'

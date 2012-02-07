@@ -1,4 +1,3 @@
-from flaskext.sqlalchemy import SQLAlchemy
 from mongoengine import connect
 from billgate import app
 
