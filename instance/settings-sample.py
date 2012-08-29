@@ -1,25 +1,20 @@
 # -*- coding: utf-8 -*-
-
-#: The title of this site
-SITE_TITLE='HasGeek Billing'
-#: Support contact email
-SITE_SUPPORT_EMAIL = 'test@example.com'
-#: TypeKit code for fonts
-TYPEKIT_CODE=''
-#: Google Analytics code UA-XXXXXX-X
-GA_CODE=''
+#: Site title
+SITE_TITLE = 'HasGeek App'
+#: Site id (for network bar)
+SITE_ID = ''
+#: Database backend
+SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
 #: Secret key
 SECRET_KEY = 'make this something random'
 #: Timezone
 TIMEZONE = 'Asia/Calcutta'
 #: LastUser server
-LASTUSER_SERVER = 'https://login.hasgeek.in/'
+LASTUSER_SERVER = 'https://login.hasgeek.com/'
 #: LastUser client id
 LASTUSER_CLIENT_ID = ''
 #: LastUser client secret
 LASTUSER_CLIENT_SECRET = ''
-#: Country list
-from billgate.countries import countries as COUNTRY_LIST
 #: Mail settings
 #: MAIL_FAIL_SILENTLY : default True
 #: MAIL_SERVER : default 'localhost'
@@ -31,17 +26,8 @@ from billgate.countries import countries as COUNTRY_LIST
 #: DEFAULT_MAIL_SENDER : default None
 MAIL_FAIL_SILENTLY = False
 MAIL_SERVER = 'localhost'
-DEFAULT_MAIL_SENDER = ('Bill Gate', 'test@example.com')
+DEFAULT_MAIL_SENDER = ('HasGeek', 'test@example.com')
 #: Logging: recipients of error emails
-ADMINS=[]
+ADMINS = []
 #: Log file
-LOGFILE='error.log'
-#: Use SSL for some URLs
-USE_SSL=False
-#: Database backend
-MONGO_DB = 'billgate'
-MONGO_CONN = {
-    'port': 27017,
-}
-#: EBS User ID
-EBS_ACCOUNT=0000
+LOGFILE = 'error.log'
