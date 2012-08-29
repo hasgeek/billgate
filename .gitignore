@@ -11,3 +11,4 @@ error.log
 *.egg-info
 .coverage
 sass
+instance/development.py

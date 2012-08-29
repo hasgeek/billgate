@@ -1,8 +1,11 @@
 Flask
-Flask-Assets
-Flask-Wtf
-jsmin
-https://github.com/hasgeek/flask-lastuser/zipball/master
 https://github.com/hasgeek/coaster/zipball/master
-mongoengine
-blinker
+https://github.com/hasgeek/baseframe/zipball/master
+Flask-SQLAlchemy
+https://github.com/hasgeek/flask-lastuser/zipball/master
+Flask-Admin
+nose
+pytz
+https://github.com/jace/pydocflow/zipball/master
+Flask-WTF
+

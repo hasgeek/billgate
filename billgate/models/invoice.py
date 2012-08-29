@@ -1,46 +1,77 @@
-from mongoengine import (
-    DateTimeField,
-    Document,
-    EmailField,
-    IntField,
-    ListField,
-    ReferenceField,
-    StringField,
-    signals
-)
-from billgate.models import User
+from decimal import Decimal
 from datetime import datetime
 
-class Invoice(Document):
-    name = StringField(max_length=80)
-    email = EmailField()
-    telephone = StringField(max_length=20)
-    date = DateTimeField(required=True)
-    user = ReferenceField(User)
-    invoice_no = StringField(max_length=80)
-    amount = IntField(min_value=0)
-    description = StringField(max_length=80)
-    lineitems = ListField()
-    
-    billing_address1 = StringField(max_length=500)
-    billing_address2 = StringField(max_length=500)
-    billing_city = StringField(max_length=80)
-    billing_state = StringField(max_length=80)
-    billing_country = StringField(max_length=3)
-    billing_postal_code = StringField(max_length=50, required=True)
+from billgate import app
+from billgate.models import db, BaseScopedIdNameMixin
+from billgate.models.user import User
+from billgate.models.workspace import Workspace
 
-    shipping_address1 = StringField(max_length=500)
-    shipping_address2 = StringField(max_length=500)
-    shipping_city = StringField(max_length=80)
-    shipping_state = StringField(max_length=80)
-    shipping_country = StringField(max_length=3)
-    shipping_postal_code = StringField(max_length=50, required=True)
+__all__ = ['INVOICE_STATUS', 'Invoice']
+
+# --- Constants ---------------------------------------------------------------
+
+class INVOICE_STATUS:
+    STUB = 0
+    DRAFT = 1
+    PROFORMA = 2
+    REVIEW = 3
+    ACCEPTED = 4
+    REJECTED = 5
+    WITHDRAWN = 6
+    DUE = 7
+    OVERDUE = 8
+    PAID = 9
+
+# --- Models ------------------------------------------------------------------
+
+class Invoice(BaseScopedIdNameMixin, db.Model):
+    """
+    Invoices can be in Proforma, Pending or Paid state.
+    Invoices should be moved to pendind state after the payment has been made, else they carry tax liabilities.
+    """
+    __tablename__ = 'invoice'
+
+    workspace_id = db.Column(db.Integer, db.ForeignKey('workspace.id'), nullable=False)
+    workspace = db.relation(Workspace, backref=db.backref('invoices', cascade='all, delete-orphan'))
+    parent = db.synonym('workspace')
+
+    #: User who submitted the report
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship(User, primaryjoin=user_id == User.id,
+        backref=db.backref('invoices', cascade='all, delete-orphan'))
     
-    created_at = DateTimeField(default=datetime.now, required=True)
-    updated_at = DateTimeField(required=True)
+    #: will update each time Invoice changes status
+    datetime = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    #: may contain payment terms
+    description = db.Column(db.Text, nullable=False, default=u'')
+
+    #: may be different from workspace currency
+    currency = db.Column(db.Unicode(3), nullable=False, default=u'INR')
+
+    #: Reviewer
+    reviewer_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    reviewer = db.relationship(User, primaryjoin=reviewer_id == User.id,
+        backref=db.backref('reviewed_invoices', cascade='all'))  # No delete-orphan
+    #: Reviewer notes
+    notes = db.Column(db.Text, nullable=False, default=u'')  # HTML notes
+
+    #: pending state carries tax liabilities for the generating organization
+    status = db.Column(db.Integer, default=INVOICE_STATUS.DRAFT, nullable=False)
+
+    total_value = db.Column(db.Numeric(10, 2), nullable=False, default=Decimal('0.0'))
+
+    __table_args__ = (db.UniqueConstraint('url_id', 'workspace_id'),)
+
+    def update_total_value(self):
+        self.total_value = sum([l.line_total for l in self.line_items])
 
     @classmethod
-    def pre_save(cls, sender, document, **kwargs):
-        document.updated_at = datetime.now()
-    
-signals.pre_save.connect(Invoice.pre_save, sender=Invoice)
+    def getw(cls, workspace):
+        return cls.query.filter_by(workspace=workspace).order_by('datetime')
+
+    @classmethod
+    def get_by_id(cls, workspace, id):
+        return cls.query.filter_by(workspace=workspace, id=id).first()
+
+

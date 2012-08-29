@@ -1,28 +1,36 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# The imports in this file are order-sensitive
 import re
 
 from flask import Flask, Markup, escape
-from flaskext.assets import Environment, Bundle
-from coaster import configureapp
+from flask.ext.assets import Environment, Bundle
+from baseframe import baseframe, baseframe_js, baseframe_css
+from flask.ext.lastuser import LastUser
+import coaster.app
 
-# First, make an app and config it
+# First, make an app
+
 app = Flask(__name__, instance_relative_config=True)
-configureapp(app, 'BILLGATE_ENV')
+lastuser = LastUser()
+
+#Prepare assets
+
 assets = Environment(app)
-
-# Second, setup assets
-
-js = Bundle('js/libs/jquery-1.5.1.min.js',
-            'js/libs/jquery.form.js',
-            'js/scripts.js',
+js = Bundle(baseframe_js,
             filters='jsmin', output='js/packed.js')
+css = Bundle(baseframe_css, 'css/app.css')
 
-assets.register('js_all', js)
+# Configure the app
+def init_for(env):
+    coaster.app.init_app(app, env)
+    lastuser.init_app(app)
+    assets.register('js_all', js)
+    assets.register('css_all', css)
 
-# Third, after config, import the models and views
+# Last, after config, import the models and views
 
+app.register_blueprint(baseframe)
 import billgate.models
 import billgate.views
 
@@ -68,3 +76,4 @@ def scrubemail(data, rot13=False, css_junk=None):
 @app.template_filter('scrubemail')
 def scrubemail_filter(data, css_junk=''):
     return Markup(scrubemail(unicode(escape(data)), rot13=True, css_junk=css_junk))
+
