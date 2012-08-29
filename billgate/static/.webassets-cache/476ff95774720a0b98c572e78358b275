@@ -600,7 +600,8 @@ if(jQuery.isWindow(elem)){var docElemProp=elem.document.documentElement["client"
 var dismiss='[data-dismiss="alert"]',Alert=function(el){$(el).on('click',dismiss,this.close)}
 Alert.prototype={constructor:Alert,close:function(e){var $this=$(this),selector=$this.attr('data-target'),$parent
 if(!selector){selector=$this.attr('href')
-selector=selector&&selector.replace(/.*(?=#[^\s]*$)/,'')}
+selector=selector&&selector.replace(/.*(?=#[^\s]*$)/,'')
+}
 $parent=$(selector)
 $parent.trigger('close')
 e&&e.preventDefault()
@@ -618,7 +619,7 @@ this.options=$.extend({},$.fn.button.defaults,options)}
 Button.prototype={constructor:Button,setState:function(state){var d='disabled',$el=this.$element,data=$el.data(),val=$el.is('input')?'val':'html'
 state=state+'Text'
 data.resetText||$el.data('resetText',$el[val]())
-$el[val](data[state]||this.options[state])
+$el[val](data[state]||this.options[state]) 
 setTimeout(function(){state=='loadingText'?$el.addClass(d).attr(d,d):$el.removeClass(d).removeAttr(d)},0)},toggle:function(){var $parent=this.$element.parent('[data-toggle="buttons-radio"]')
 $parent&&$parent.find('.active').removeClass('active')
 this.$element.toggleClass('active')}}
@@ -635,7 +636,8 @@ var toggle='[data-toggle="dropdown"]',Dropdown=function(element){var $el=$(eleme
 $('html').on('click.dropdown.data-api',function(){$el.parent().removeClass('open')})}
 Dropdown.prototype={constructor:Dropdown,toggle:function(e){var $this=$(this),selector=$this.attr('data-target'),$parent,isActive
 if(!selector){selector=$this.attr('href')
-selector=selector&&selector.replace(/.*(?=#[^\s]*$)/,'')}
+selector=selector&&selector.replace(/.*(?=#[^\s]*$)/,'')
+}
 $parent=$(selector)
 $parent.length||($parent=$this.parent())
 isActive=$parent.hasClass('open')
@@ -654,7 +656,7 @@ Modal.prototype={constructor:Modal,toggle:function(){return this[!this.isShown?'
 if(this.isShown)return
 $('body').addClass('modal-open')
 this.isShown=true
-this.$element.trigger('show');escape.call(this);backdrop.call(this,function(){var transition=$.support.transition&&that.$element.hasClass('fade');!that.$element.parent().length&&that.$element.appendTo(document.body);that.$element.show();if(transition){that.$element[0].offsetWidth}
+this.$element.trigger('show');escape.call(this);backdrop.call(this,function(){var transition=$.support.transition&&that.$element.hasClass('fade');!that.$element.parent().length&&that.$element.appendTo(document.body); that.$element.show();if(transition){that.$element[0].offsetWidth}
 that.$element.addClass('in')
 transition?that.$element.one($.support.transition.end,function(){that.$element.trigger('shown')}):that.$element.trigger('shown')})},hide:function(e){e&&e.preventDefault()
 if(!this.isShown)return
@@ -674,7 +676,7 @@ function backdrop(callback){var that=this,animate=this.$element.hasClass('fade')
 if(this.isShown&&this.options.backdrop){var doAnimate=$.support.transition&&animate
 this.$backdrop=$('<div class="modal-backdrop '+animate+'" />').appendTo(document.body)
 if(this.options.backdrop!='static'){this.$backdrop.click($.proxy(this.hide,this))}
-if(doAnimate)this.$backdrop[0].offsetWidth;this.$backdrop.addClass('in')
+if(doAnimate)this.$backdrop[0].offsetWidth; this.$backdrop.addClass('in')
 doAnimate?this.$backdrop.one($.support.transition.end,callback):callback()}else if(!this.isShown&&this.$backdrop){this.$backdrop.removeClass('in')
 $.support.transition&&this.$element.hasClass('fade')?this.$backdrop.one($.support.transition.end,$.proxy(removeBackdrop,this)):removeBackdrop.call(this)}else if(callback){callback()}}
 function removeBackdrop(){this.$backdrop.remove()
@@ -687,7 +689,8 @@ if(typeof option=='string')data[option]()
 else if(options.show)data.show()})}
 $.fn.modal.defaults={backdrop:true,keyboard:true,show:true}
 $.fn.modal.Constructor=Modal
-$(function(){$('body').on('click.modal.data-api','[data-toggle="modal"]',function(e){var $this=$(this),href,$target=$($this.attr('data-target')||(href=$this.attr('href'))&&href.replace(/.*(?=#[^\s]+$)/,'')),option=$target.data('modal')?'toggle':$.extend({},$target.data(),$this.data())
+$(function(){$('body').on('click.modal.data-api','[data-toggle="modal"]',function(e){var $this=$(this),href,$target=$($this.attr('data-target')||(href=$this.attr('href'))&&href.replace(/.*(?=#[^\s]+$)/,''))
+,option=$target.data('modal')?'toggle':$.extend({},$target.data(),$this.data())
 e.preventDefault()
 $target.modal(option)})})}(window.jQuery);!function($){"use strict"
 var Tooltip=function(element,options){this.init('tooltip',element,options)}
@@ -746,7 +749,8 @@ $.fn.tooltip.defaults={animation:true,delay:0,selector:false,placement:'top',tri
 var Tab=function(element){this.element=$(element)}
 Tab.prototype={constructor:Tab,show:function(){var $this=this.element,$ul=$this.closest('ul:not(.dropdown-menu)'),selector=$this.attr('data-target'),previous,$target
 if(!selector){selector=$this.attr('href')
-selector=selector&&selector.replace(/.*(?=#[^\s]*$)/,'')}
+selector=selector&&selector.replace(/.*(?=#[^\s]*$)/,'')
+}
 if($this.parent('li').hasClass('active'))return
 previous=$ul.find('.active a').last()[0]
 $this.trigger({type:'show',relatedTarget:previous})
@@ -755,7 +759,7 @@ this.activate($this.parent('li'),$ul)
 this.activate($target,$target.parent(),function(){$this.trigger({type:'shown',relatedTarget:previous})})},activate:function(element,container,callback){var $active=container.find('> .active'),transition=callback&&$.support.transition&&$active.hasClass('fade')
 function next(){$active.removeClass('active').find('> .dropdown-menu > .active').removeClass('active')
 element.addClass('active')
-if(transition){element[0].offsetWidth;element.addClass('in')}else{element.removeClass('fade')}
+if(transition){element[0].offsetWidth; element.addClass('in')}else{element.removeClass('fade')}
 if(element.parent('.dropdown-menu')){element.closest('li.dropdown').addClass('active')}
 callback&&callback()}
 transition?$active.one($.support.transition.end,next):next()
@@ -772,23 +776,24 @@ if($.browser.webkit){transitionEnd="webkitTransitionEnd"}else if($.browser.mozil
 return transitionEnd}())}})()})}(window.jQuery);;(function($){$.fn.ajaxSubmit=function(options){if(!this.length){log('ajaxSubmit: skipping submit process - no element selected');return this;}
 var method,action,url,$form=this;if(typeof options=='function'){options={success:options};}
 method=this.attr('method');action=this.attr('action');url=(typeof action==='string')?$.trim(action):'';url=url||window.location.href||'';if(url){url=(url.match(/^([^#]+)/)||[])[1];}
-options=$.extend(true,{url:url,success:$.ajaxSettings.success,type:method||'GET',iframeSrc:/^https/i.test(window.location.href||'')?'javascript:false':'about:blank'},options);var veto={};this.trigger('form-pre-serialize',[this,options,veto]);if(veto.veto){log('ajaxSubmit: submit vetoed via form-pre-serialize trigger');return this;}
+options=$.extend(true,{url:url,success:$.ajaxSettings.success,type:method||'GET',iframeSrc:/^https/i.test(window.location.href||'')?'javascript:false':'about:blank'},options); var veto={};this.trigger('form-pre-serialize',[this,options,veto]);if(veto.veto){log('ajaxSubmit: submit vetoed via form-pre-serialize trigger');return this;} 
 if(options.beforeSerialize&&options.beforeSerialize(this,options)===false){log('ajaxSubmit: submit aborted via beforeSerialize callback');return this;}
 var traditional=options.traditional;if(traditional===undefined){traditional=$.ajaxSettings.traditional;}
-var qx,n,v,a=this.formToArray(options.semantic);if(options.data){options.extraData=options.data;qx=$.param(options.data,traditional);}
-if(options.beforeSubmit&&options.beforeSubmit(a,this,options)===false){log('ajaxSubmit: submit aborted via beforeSubmit callback');return this;}
+var qx,n,v,a=this.formToArray(options.semantic);if(options.data){options.extraData=options.data;qx=$.param(options.data,traditional);} 
+if(options.beforeSubmit&&options.beforeSubmit(a,this,options)===false){log('ajaxSubmit: submit aborted via beforeSubmit callback');return this;} 
 this.trigger('form-submit-validate',[a,this,options,veto]);if(veto.veto){log('ajaxSubmit: submit vetoed via form-submit-validate trigger');return this;}
 var q=$.param(a,traditional);if(qx){q=(q?(q+'&'+qx):qx);}
 if(options.type.toUpperCase()=='GET'){options.url+=(options.url.indexOf('?')>=0?'&':'?')+q;options.data=null;}
 else{options.data=q;}
 var callbacks=[];if(options.resetForm){callbacks.push(function(){$form.resetForm();});}
-if(options.clearForm){callbacks.push(function(){$form.clearForm(options.includeHidden);});}
+if(options.clearForm){callbacks.push(function(){$form.clearForm(options.includeHidden);});} 
 if(!options.dataType&&options.target){var oldSuccess=options.success||function(){};callbacks.push(function(data){var fn=options.replaceTarget?'replaceWith':'html';$(options.target)[fn](data).each(oldSuccess,arguments);});}
 else if(options.success){callbacks.push(options.success);}
-options.success=function(data,status,xhr){var context=options.context||options;for(var i=0,max=callbacks.length;i<max;i++){callbacks[i].apply(context,[data,status,xhr||$form,$form]);}};var fileInputs=$('input:file:enabled[value]',this);var hasFileInputs=fileInputs.length>0;var mp='multipart/form-data';var multipart=($form.attr('enctype')==mp||$form.attr('encoding')==mp);var fileAPI=!!(hasFileInputs&&fileInputs.get(0).files&&window.FormData);log("fileAPI :"+fileAPI);var shouldUseFrame=(hasFileInputs||multipart)&&!fileAPI;if(options.iframe!==false&&(options.iframe||shouldUseFrame)){if(options.closeKeepAlive){$.get(options.closeKeepAlive,function(){fileUploadIframe(a);});}
+options.success=function(data,status,xhr){ var context=options.context||options; for(var i=0,max=callbacks.length;i<max;i++){callbacks[i].apply(context,[data,status,xhr||$form,$form]);}};var fileInputs=$('input:file:enabled[value]',this);var hasFileInputs=fileInputs.length>0;var mp='multipart/form-data';var multipart=($form.attr('enctype')==mp||$form.attr('encoding')==mp);var fileAPI=!!(hasFileInputs&&fileInputs.get(0).files&&window.FormData);log("fileAPI :"+fileAPI);var shouldUseFrame=(hasFileInputs||multipart)&&!fileAPI; if(options.iframe!==false&&(options.iframe||shouldUseFrame)){ 
+if(options.closeKeepAlive){$.get(options.closeKeepAlive,function(){fileUploadIframe(a);});}
 else{fileUploadIframe(a);}}
 else if((hasFileInputs||multipart)&&fileAPI){options.progress=options.progress||$.noop;fileUploadXhr(a);}
-else{$.ajax(options);}
+else{$.ajax(options);} 
 this.trigger('form-submit-notify',[this,options]);return this;function fileUploadXhr(a){var formdata=new FormData();for(var i=0;i<a.length;i++){if(a[i].type=='file')
 continue;formdata.append(a[i].name,a[i].value);}
 $form.find('input:file:enabled').each(function(){var name=$(this).attr('name'),files=this.files;if(name){for(var i=0;i<files.length;i++)
@@ -797,31 +802,31 @@ formdata.append(k,options.extraData[k])}
 options.data=null;var s=$.extend(true,{},$.ajaxSettings,options,{contentType:false,processData:false,cache:false,type:'POST'});s.data=null;var beforeSend=s.beforeSend;s.beforeSend=function(xhr,o){o.data=formdata;if(xhr.upload){xhr.upload.onprogress=function(event){o.progress(event.position,event.total);};}
 if(beforeSend)
 beforeSend.call(o,xhr,options);};$.ajax(s);}
-function fileUploadIframe(a){var form=$form[0],el,i,s,g,id,$io,io,xhr,sub,n,timedOut,timeoutHandle;var useProp=!!$.fn.prop;if(a){if(useProp){for(i=0;i<a.length;i++){el=$(form[a[i].name]);el.prop('disabled',false);}}else{for(i=0;i<a.length;i++){el=$(form[a[i].name]);el.removeAttr('disabled');}};}
+function fileUploadIframe(a){var form=$form[0],el,i,s,g,id,$io,io,xhr,sub,n,timedOut,timeoutHandle;var useProp=!!$.fn.prop;if(a){if(useProp){ for(i=0;i<a.length;i++){el=$(form[a[i].name]);el.prop('disabled',false);}}else{for(i=0;i<a.length;i++){el=$(form[a[i].name]);el.removeAttr('disabled');}};}
 if($(':input[name=submit],:input[id=submit]',form).length){alert('Error: Form elements must not have name or id of "submit".');return;}
 s=$.extend(true,{},$.ajaxSettings,options);s.context=s.context||s;id='jqFormIO'+(new Date().getTime());if(s.iframeTarget){$io=$(s.iframeTarget);n=$io.attr('name');if(n==null)
 $io.attr('name',id);else
 id=n;}
 else{$io=$('<iframe name="'+id+'" src="'+s.iframeSrc+'" />');$io.css({position:'absolute',top:'-1000px',left:'-1000px'});}
-io=$io[0];xhr={aborted:0,responseText:null,responseXML:null,status:0,statusText:'n/a',getAllResponseHeaders:function(){},getResponseHeader:function(){},setRequestHeader:function(){},abort:function(status){var e=(status==='timeout'?'timeout':'aborted');log('aborting upload... '+e);this.aborted=1;$io.attr('src',s.iframeSrc);xhr.error=e;s.error&&s.error.call(s.context,xhr,e,status);g&&$.event.trigger("ajaxError",[xhr,s,e]);s.complete&&s.complete.call(s.context,xhr,e);}};g=s.global;if(g&&!$.active++){$.event.trigger("ajaxStart");}
+io=$io[0];xhr={ aborted:0,responseText:null,responseXML:null,status:0,statusText:'n/a',getAllResponseHeaders:function(){},getResponseHeader:function(){},setRequestHeader:function(){},abort:function(status){var e=(status==='timeout'?'timeout':'aborted');log('aborting upload... '+e);this.aborted=1;$io.attr('src',s.iframeSrc); xhr.error=e;s.error&&s.error.call(s.context,xhr,e,status);g&&$.event.trigger("ajaxError",[xhr,s,e]);s.complete&&s.complete.call(s.context,xhr,e);}};g=s.global; if(g&&!$.active++){$.event.trigger("ajaxStart");}
 if(g){$.event.trigger("ajaxSend",[xhr,s]);}
 if(s.beforeSend&&s.beforeSend.call(s.context,xhr,s)===false){if(s.global){$.active--;}
 return;}
-if(xhr.aborted){return;}
+if(xhr.aborted){return;} 
 sub=form.clk;if(sub){n=sub.name;if(n&&!sub.disabled){s.extraData=s.extraData||{};s.extraData[n]=sub.value;if(sub.type=="image"){s.extraData[n+'.x']=form.clk_x;s.extraData[n+'.y']=form.clk_y;}}}
 var CLIENT_TIMEOUT_ABORT=1;var SERVER_ABORT=2;function getDoc(frame){var doc=frame.contentWindow?frame.contentWindow.document:frame.contentDocument?frame.contentDocument:frame.document;return doc;}
-var csrf_token=$('meta[name=csrf-token]').attr('content');var csrf_param=$('meta[name=csrf-param]').attr('content');if(csrf_param&&csrf_token){s.extraData=s.extraData||{};s.extraData[csrf_param]=csrf_token;}
-function doSubmit(){var t=$form.attr('target'),a=$form.attr('action');form.setAttribute('target',id);if(!method){form.setAttribute('method','POST');}
-if(a!=s.url){form.setAttribute('action',s.url);}
-if(!s.skipEncodingOverride&&(!method||/post/i.test(method))){$form.attr({encoding:'multipart/form-data',enctype:'multipart/form-data'});}
-if(s.timeout){timeoutHandle=setTimeout(function(){timedOut=true;cb(CLIENT_TIMEOUT_ABORT);},s.timeout);}
+var csrf_token=$('meta[name=csrf-token]').attr('content');var csrf_param=$('meta[name=csrf-param]').attr('content');if(csrf_param&&csrf_token){s.extraData=s.extraData||{};s.extraData[csrf_param]=csrf_token;} 
+function doSubmit(){ var t=$form.attr('target'),a=$form.attr('action'); form.setAttribute('target',id);if(!method){form.setAttribute('method','POST');}
+if(a!=s.url){form.setAttribute('action',s.url);} 
+if(!s.skipEncodingOverride&&(!method||/post/i.test(method))){$form.attr({encoding:'multipart/form-data',enctype:'multipart/form-data'});} 
+if(s.timeout){timeoutHandle=setTimeout(function(){timedOut=true;cb(CLIENT_TIMEOUT_ABORT);},s.timeout);} 
 function checkState(){try{var state=getDoc(io).readyState;log('state = '+state);if(state.toLowerCase()=='uninitialized')
 setTimeout(checkState,50);}
-catch(e){log('Server abort: ',e,' (',e.name,')');cb(SERVER_ABORT);timeoutHandle&&clearTimeout(timeoutHandle);timeoutHandle=undefined;}}
+catch(e){log('Server abort: ',e,' (',e.name,')');cb(SERVER_ABORT);timeoutHandle&&clearTimeout(timeoutHandle);timeoutHandle=undefined;}} 
 var extraInputs=[];try{if(s.extraData){for(var n in s.extraData){extraInputs.push($('<input type="hidden" name="'+n+'">').attr('value',s.extraData[n]).appendTo(form)[0]);}}
-if(!s.iframeTarget){$io.appendTo('body');io.attachEvent?io.attachEvent('onload',cb):io.addEventListener('load',cb,false);}
+if(!s.iframeTarget){ $io.appendTo('body');io.attachEvent?io.attachEvent('onload',cb):io.addEventListener('load',cb,false);}
 setTimeout(checkState,15);form.submit();}
-finally{form.setAttribute('action',a);if(t){form.setAttribute('target',t);}else{$form.removeAttr('target');}
+finally{ form.setAttribute('action',a);if(t){form.setAttribute('target',t);}else{$form.removeAttr('target');}
 $(extraInputs).remove();}}
 if(s.forceSync){doSubmit();}
 else{setTimeout(doSubmit,10);}
@@ -830,51 +835,52 @@ try{doc=getDoc(io);}
 catch(ex){log('cannot access response document: ',ex);e=SERVER_ABORT;}
 if(e===CLIENT_TIMEOUT_ABORT&&xhr){xhr.abort('timeout');return;}
 else if(e==SERVER_ABORT&&xhr){xhr.abort('server abort');return;}
-if(!doc||doc.location.href==s.iframeSrc){if(!timedOut)
+if(!doc||doc.location.href==s.iframeSrc){ if(!timedOut)
 return;}
 io.detachEvent?io.detachEvent('onload',cb):io.removeEventListener('load',cb,false);var status='success',errMsg;try{if(timedOut){throw'timeout';}
-var isXml=s.dataType=='xml'||doc.XMLDocument||$.isXMLDoc(doc);log('isXml='+isXml);if(!isXml&&window.opera&&(doc.body==null||doc.body.innerHTML=='')){if(--domCheckCount){log('requeing onLoad callback, DOM not available');setTimeout(cb,250);return;}}
+var isXml=s.dataType=='xml'||doc.XMLDocument||$.isXMLDoc(doc);log('isXml='+isXml);if(!isXml&&window.opera&&(doc.body==null||doc.body.innerHTML=='')){if(--domCheckCount){ log('requeing onLoad callback, DOM not available');setTimeout(cb,250);return;}
+}
 var docRoot=doc.body?doc.body:doc.documentElement;xhr.responseText=docRoot?docRoot.innerHTML:null;xhr.responseXML=doc.XMLDocument?doc.XMLDocument:doc;if(isXml)
 s.dataType='xml';xhr.getResponseHeader=function(header){var headers={'content-type':s.dataType};return headers[header];};if(docRoot){xhr.status=Number(docRoot.getAttribute('status'))||xhr.status;xhr.statusText=docRoot.getAttribute('statusText')||xhr.statusText;}
-var dt=(s.dataType||'').toLowerCase();var scr=/(json|script|text)/.test(dt);if(scr||s.textarea){var ta=doc.getElementsByTagName('textarea')[0];if(ta){xhr.responseText=ta.value;xhr.status=Number(ta.getAttribute('status'))||xhr.status;xhr.statusText=ta.getAttribute('statusText')||xhr.statusText;}
-else if(scr){var pre=doc.getElementsByTagName('pre')[0];var b=doc.getElementsByTagName('body')[0];if(pre){xhr.responseText=pre.textContent?pre.textContent:pre.innerText;}
+var dt=(s.dataType||'').toLowerCase();var scr=/(json|script|text)/.test(dt);if(scr||s.textarea){ var ta=doc.getElementsByTagName('textarea')[0];if(ta){xhr.responseText=ta.value;xhr.status=Number(ta.getAttribute('status'))||xhr.status;xhr.statusText=ta.getAttribute('statusText')||xhr.statusText;}
+else if(scr){ var pre=doc.getElementsByTagName('pre')[0];var b=doc.getElementsByTagName('body')[0];if(pre){xhr.responseText=pre.textContent?pre.textContent:pre.innerText;}
 else if(b){xhr.responseText=b.textContent?b.textContent:b.innerText;}}}
 else if(dt=='xml'&&!xhr.responseXML&&xhr.responseText!=null){xhr.responseXML=toXml(xhr.responseText);}
 try{data=httpData(xhr,dt,s);}
 catch(e){status='parsererror';xhr.error=errMsg=(e||status);}}
 catch(e){log('error caught: ',e);status='error';xhr.error=errMsg=(e||status);}
 if(xhr.aborted){log('upload aborted');status=null;}
-if(xhr.status){status=(xhr.status>=200&&xhr.status<300||xhr.status===304)?'success':'error';}
+if(xhr.status){ status=(xhr.status>=200&&xhr.status<300||xhr.status===304)?'success':'error';} 
 if(status==='success'){s.success&&s.success.call(s.context,data,'success',xhr);g&&$.event.trigger("ajaxSuccess",[xhr,s]);}
 else if(status){if(errMsg==undefined)
 errMsg=xhr.statusText;s.error&&s.error.call(s.context,xhr,status,errMsg);g&&$.event.trigger("ajaxError",[xhr,s,errMsg]);}
 g&&$.event.trigger("ajaxComplete",[xhr,s]);if(g&&!--$.active){$.event.trigger("ajaxStop");}
 s.complete&&s.complete.call(s.context,xhr,status);callbackProcessed=true;if(s.timeout)
-clearTimeout(timeoutHandle);setTimeout(function(){if(!s.iframeTarget)
+clearTimeout(timeoutHandle); setTimeout(function(){if(!s.iframeTarget)
 $io.remove();xhr.responseXML=null;},100);}
 var toXml=$.parseXML||function(s,doc){if(window.ActiveXObject){doc=new ActiveXObject('Microsoft.XMLDOM');doc.async='false';doc.loadXML(s);}
 else{doc=(new DOMParser()).parseFromString(s,'text/xml');}
-return(doc&&doc.documentElement&&doc.documentElement.nodeName!='parsererror')?doc:null;};var parseJSON=$.parseJSON||function(s){return window['eval']('('+s+')');};var httpData=function(xhr,type,s){var ct=xhr.getResponseHeader('content-type')||'',xml=type==='xml'||!type&&ct.indexOf('xml')>=0,data=xml?xhr.responseXML:xhr.responseText;if(xml&&data.documentElement.nodeName==='parsererror'){$.error&&$.error('parsererror');}
+return(doc&&doc.documentElement&&doc.documentElement.nodeName!='parsererror')?doc:null;};var parseJSON=$.parseJSON||function(s){return window['eval']('('+s+')');};var httpData=function(xhr,type,s){ var ct=xhr.getResponseHeader('content-type')||'',xml=type==='xml'||!type&&ct.indexOf('xml')>=0,data=xml?xhr.responseXML:xhr.responseText;if(xml&&data.documentElement.nodeName==='parsererror'){$.error&&$.error('parsererror');}
 if(s&&s.dataFilter){data=s.dataFilter(data,type);}
 if(typeof data==='string'){if(type==='json'||!type&&ct.indexOf('json')>=0){data=parseJSON(data);}else if(type==="script"||!type&&ct.indexOf("javascript")>=0){$.globalEval(data);}}
-return data;};}};$.fn.ajaxForm=function(options){options=options||{};options.delegation=options.delegation&&$.isFunction($.fn.on);if(!options.delegation&&this.length===0){var o={s:this.selector,c:this.context};if(!$.isReady&&o.s){log('DOM not ready, queuing ajaxForm');$(function(){$(o.s,o.c).ajaxForm(options);});return this;}
+return data;};}};$.fn.ajaxForm=function(options){options=options||{};options.delegation=options.delegation&&$.isFunction($.fn.on); if(!options.delegation&&this.length===0){var o={s:this.selector,c:this.context};if(!$.isReady&&o.s){log('DOM not ready, queuing ajaxForm');$(function(){$(o.s,o.c).ajaxForm(options);});return this;}
 log('terminating; zero elements found by selector'+($.isReady?'':' (DOM not ready)'));return this;}
 if(options.delegation){$(document).off('submit.form-plugin',this.selector,doAjaxSubmit).off('click.form-plugin',this.selector,captureSubmittingElement).on('submit.form-plugin',this.selector,options,doAjaxSubmit).on('click.form-plugin',this.selector,options,captureSubmittingElement);return this;}
-return this.ajaxFormUnbind().bind('submit.form-plugin',options,doAjaxSubmit).bind('click.form-plugin',options,captureSubmittingElement);};function doAjaxSubmit(e){var options=e.data;if(!e.isDefaultPrevented()){e.preventDefault();$(this).ajaxSubmit(options);}}
+return this.ajaxFormUnbind().bind('submit.form-plugin',options,doAjaxSubmit).bind('click.form-plugin',options,captureSubmittingElement);};function doAjaxSubmit(e){var options=e.data;if(!e.isDefaultPrevented()){ e.preventDefault();$(this).ajaxSubmit(options);}}
 function captureSubmittingElement(e){var target=e.target;var $el=$(target);if(!($el.is(":submit,input:image"))){var t=$el.closest(':submit');if(t.length==0){return;}
 target=t[0];}
-var form=this;form.clk=target;if(target.type=='image'){if(e.offsetX!=undefined){form.clk_x=e.offsetX;form.clk_y=e.offsetY;}else if(typeof $.fn.offset=='function'){var offset=$el.offset();form.clk_x=e.pageX-offset.left;form.clk_y=e.pageY-offset.top;}else{form.clk_x=e.pageX-target.offsetLeft;form.clk_y=e.pageY-target.offsetTop;}}
+var form=this;form.clk=target;if(target.type=='image'){if(e.offsetX!=undefined){form.clk_x=e.offsetX;form.clk_y=e.offsetY;}else if(typeof $.fn.offset=='function'){var offset=$el.offset();form.clk_x=e.pageX-offset.left;form.clk_y=e.pageY-offset.top;}else{form.clk_x=e.pageX-target.offsetLeft;form.clk_y=e.pageY-target.offsetTop;}} 
 setTimeout(function(){form.clk=form.clk_x=form.clk_y=null;},100);};$.fn.ajaxFormUnbind=function(){return this.unbind('submit.form-plugin click.form-plugin');};$.fn.formToArray=function(semantic){var a=[];if(this.length===0){return a;}
 var form=this[0];var els=semantic?form.getElementsByTagName('*'):form.elements;if(!els){return a;}
 var i,j,n,v,el,max,jmax;for(i=0,max=els.length;i<max;i++){el=els[i];n=el.name;if(!n){continue;}
-if(semantic&&form.clk&&el.type=="image"){if(!el.disabled&&form.clk==el){a.push({name:n,value:$(el).val(),type:el.type});a.push({name:n+'.x',value:form.clk_x},{name:n+'.y',value:form.clk_y});}
+if(semantic&&form.clk&&el.type=="image"){ if(!el.disabled&&form.clk==el){a.push({name:n,value:$(el).val(),type:el.type});a.push({name:n+'.x',value:form.clk_x},{name:n+'.y',value:form.clk_y});}
 continue;}
 v=$.fieldValue(el,true);if(v&&v.constructor==Array){for(j=0,jmax=v.length;j<jmax;j++){a.push({name:n,value:v[j]});}}
 else if(v!==null&&typeof v!='undefined'){a.push({name:n,value:v,type:el.type});}}
-if(!semantic&&form.clk){var $input=$(form.clk),input=$input[0];n=input.name;if(n&&!input.disabled&&input.type=='image'){a.push({name:n,value:$input.val()});a.push({name:n+'.x',value:form.clk_x},{name:n+'.y',value:form.clk_y});}}
-return a;};$.fn.formSerialize=function(semantic){return $.param(this.formToArray(semantic));};$.fn.fieldSerialize=function(successful){var a=[];this.each(function(){var n=this.name;if(!n){return;}
+if(!semantic&&form.clk){ var $input=$(form.clk),input=$input[0];n=input.name;if(n&&!input.disabled&&input.type=='image'){a.push({name:n,value:$input.val()});a.push({name:n+'.x',value:form.clk_x},{name:n+'.y',value:form.clk_y});}}
+return a;};$.fn.formSerialize=function(semantic){ return $.param(this.formToArray(semantic));};$.fn.fieldSerialize=function(successful){var a=[];this.each(function(){var n=this.name;if(!n){return;}
 var v=$.fieldValue(this,successful);if(v&&v.constructor==Array){for(var i=0,max=v.length;i<max;i++){a.push({name:n,value:v[i]});}}
-else if(v!==null&&typeof v!='undefined'){a.push({name:this.name,value:v});}});return $.param(a);};$.fn.fieldValue=function(successful){for(var val=[],i=0,max=this.length;i<max;i++){var el=this[i];var v=$.fieldValue(el,successful);if(v===null||typeof v=='undefined'||(v.constructor==Array&&!v.length)){continue;}
+else if(v!==null&&typeof v!='undefined'){a.push({name:this.name,value:v});}}); return $.param(a);};$.fn.fieldValue=function(successful){for(var val=[],i=0,max=this.length;i<max;i++){var el=this[i];var v=$.fieldValue(el,successful);if(v===null||typeof v=='undefined'||(v.constructor==Array&&!v.length)){continue;}
 v.constructor==Array?$.merge(val,v):val.push(v);}
 return val;};$.fieldValue=function(el,successful){var n=el.name,t=el.type,tag=el.tagName.toLowerCase();if(successful===undefined){successful=true;}
 if(successful&&(!n||el.disabled||t=='reset'||t=='button'||(t=='checkbox'||t=='radio')&&!el.checked||(t=='submit'||t=='image')&&el.form&&el.form.clk!=el||tag=='select'&&el.selectedIndex==-1)){return null;}
@@ -883,18 +889,19 @@ var a=[],ops=el.options;var one=(t=='select-one');var max=(one?index+1:ops.lengt
 if(one){return v;}
 a.push(v);}}
 return a;}
-return $(el).val();};$.fn.clearForm=function(includeHidden){return this.each(function(){$('input,select,textarea',this).clearFields(includeHidden);});};$.fn.clearFields=$.fn.clearInputs=function(includeHidden){var re=/^(?:color|date|datetime|email|month|number|password|range|search|tel|text|time|url|week)$/i;return this.each(function(){var t=this.type,tag=this.tagName.toLowerCase();if(re.test(t)||tag=='textarea'||(includeHidden&&/hidden/.test(t))){this.value='';}
+return $(el).val();};$.fn.clearForm=function(includeHidden){return this.each(function(){$('input,select,textarea',this).clearFields(includeHidden);});};$.fn.clearFields=$.fn.clearInputs=function(includeHidden){var re=/^(?:color|date|datetime|email|month|number|password|range|search|tel|text|time|url|week)$/i; return this.each(function(){var t=this.type,tag=this.tagName.toLowerCase();if(re.test(t)||tag=='textarea'||(includeHidden&&/hidden/.test(t))){this.value='';}
 else if(t=='checkbox'||t=='radio'){this.checked=false;}
 else if(tag=='select'){this.selectedIndex=-1;}});};$.fn.resetForm=function(){return this.each(function(){if(typeof this.reset=='function'||(typeof this.reset=='object'&&!this.reset.nodeType)){this.reset();}});};$.fn.enable=function(b){if(b===undefined){b=true;}
 return this.each(function(){this.disabled=!b;});};$.fn.selected=function(select){if(select===undefined){select=true;}
 return this.each(function(){var t=this.type;if(t=='checkbox'||t=='radio'){this.checked=select;}
-else if(this.tagName.toLowerCase()=='option'){var $sel=$(this).parent('select');if(select&&$sel[0]&&$sel[0].type=='select-one'){$sel.find('option').selected(false);}
+else if(this.tagName.toLowerCase()=='option'){var $sel=$(this).parent('select');if(select&&$sel[0]&&$sel[0].type=='select-one'){ $sel.find('option').selected(false);}
 this.selected=select;}});};$.fn.ajaxSubmit.debug=false;function log(){if(!$.fn.ajaxSubmit.debug)
 return;var msg='[jquery.form] '+Array.prototype.join.call(arguments,'');if(window.console&&window.console.log){window.console.log(msg);}
 else if(window.opera&&window.opera.postError){window.opera.postError(msg);}};})(jQuery);(function(b){var e,d,a=[],c=window;b.fn.tinymce=function(j){var p=this,g,k,h,m,i,l="",n="";if(!p.length){return p}if(!j){return tinyMCE.get(p[0].id)}p.css("visibility","hidden");function o(){var r=[],q=0;if(f){f();f=null}p.each(function(t,u){var s,w=u.id,v=j.oninit;if(!w){u.id=w=tinymce.DOM.uniqueId()}s=new tinymce.Editor(w,j);r.push(s);s.onInit.add(function(){var x,y=v;p.css("visibility","");if(v){if(++q==r.length){if(tinymce.is(y,"string")){x=(y.indexOf(".")===-1)?null:tinymce.resolve(y.replace(/\.\w+$/,""));y=tinymce.resolve(y)}y.apply(x||tinymce,r)}}})});b.each(r,function(t,s){s.render()})}if(!c.tinymce&&!d&&(g=j.script_url)){d=1;h=g.substring(0,g.lastIndexOf("/"));if(/_(src|dev)\.js/g.test(g)){n="_src"}m=g.lastIndexOf("?");if(m!=-1){l=g.substring(m+1)}c.tinyMCEPreInit=c.tinyMCEPreInit||{base:h,suffix:n,query:l};if(g.indexOf("gzip")!=-1){i=j.language||"en";g=g+(/\?/.test(g)?"&":"?")+"js=true&core=true&suffix="+escape(n)+"&themes="+escape(j.theme)+"&plugins="+escape(j.plugins)+"&languages="+i;if(!c.tinyMCE_GZ){tinyMCE_GZ={start:function(){tinymce.suffix=n;function q(r){tinymce.ScriptLoader.markDone(tinyMCE.baseURI.toAbsolute(r))}q("langs/"+i+".js");q("themes/"+j.theme+"/editor_template"+n+".js");q("themes/"+j.theme+"/langs/"+i+".js");b.each(j.plugins.split(","),function(s,r){if(r){q("plugins/"+r+"/editor_plugin"+n+".js");q("plugins/"+r+"/langs/"+i+".js")}})},end:function(){}}}}b.ajax({type:"GET",url:g,dataType:"script",cache:true,success:function(){tinymce.dom.Event.domLoaded=1;d=2;if(j.script_loaded){j.script_loaded()}o();b.each(a,function(q,r){r()})}})}else{if(d===1){a.push(o)}else{o()}}return p};b.extend(b.expr[":"],{tinymce:function(g){return!!(g.id&&tinyMCE.get(g.id))}});function f(){function i(l){if(l==="remove"){this.each(function(n,o){var m=h(o);if(m){m.remove()}})}this.find("span.mceEditor,div.mceEditor").each(function(n,o){var m=tinyMCE.get(o.id.replace(/_parent$/,""));if(m){m.remove()}})}function k(n){var m=this,l;if(n!==e){i.call(m);m.each(function(p,q){var o;if(o=tinyMCE.get(q.id)){o.setContent(n)}})}else{if(m.length>0){if(l=tinyMCE.get(m[0].id)){return l.getContent()}}}}function h(m){var l=null;(m)&&(m.id)&&(c.tinymce)&&(l=tinyMCE.get(m.id));return l}function g(l){return!!((l)&&(l.length)&&(c.tinymce)&&(l.is(":tinymce")))}var j={};b.each(["text","html","val"],function(n,l){var o=j[l]=b.fn[l],m=(l==="text");b.fn[l]=function(s){var p=this;if(!g(p)){return o.apply(p,arguments)}if(s!==e){k.call(p.filter(":tinymce"),s);o.apply(p.not(":tinymce"),arguments);return p}else{var r="";var q=arguments;(m?p:p.eq(0)).each(function(u,v){var t=h(v);r+=t?(m?t.getContent().replace(/<(?:"[^"]*"|'[^']*'|[^'">])*>/g,""):t.getContent()):o.apply(b(v),q)});return r}}});b.each(["append","prepend"],function(n,m){var o=j[m]=b.fn[m],l=(m==="prepend");b.fn[m]=function(q){var p=this;if(!g(p)){return o.apply(p,arguments)}if(q!==e){p.filter(":tinymce").each(function(s,t){var r=h(t);r&&r.setContent(l?q+r.getContent():r.getContent()+q)});o.apply(p.not(":tinymce"),arguments);return p}}});b.each(["remove","replaceWith","replaceAll","empty"],function(m,l){var n=j[l]=b.fn[l];b.fn[l]=function(){i.call(this,l);return n.apply(this,arguments)}});j.attr=b.fn.attr;b.fn.attr=function(n,q,o){var m=this;if((!n)||(n!=="value")||(!g(m))){return j.attr.call(m,n,q,o)}if(q!==e){k.call(m.filter(":tinymce"),q);j.attr.call(m.not(":tinymce"),n,q,o);return m}else{var p=m[0],l=h(p);return l?l.getContent():j.attr.call(b(p),n,q,o)}}}})(jQuery);!function($){var selector='[data-datepicker]',all=[];function clearDatePickers(except){var ii;for(ii=0;ii<all.length;ii++){if(all[ii]!=except){all[ii].hide();}}}
 function DatePicker(element,options){this.$el=$(element);this.proxy('show').proxy('ahead').proxy('hide').proxy('keyHandler').proxy('selectDate');var options=$.extend({},$.fn.datepicker.defaults,options);if((!!options.parse)||(!!options.format)||!this.detectNative()){$.extend(this,options);this.$el.data('datepicker',this);all.push(this);this.init();}}
 DatePicker.prototype={detectNative:function(el){if(navigator.userAgent.match(/(iPod|iPad|iPhone); CPU(\ iPhone)? OS 5_\d/i)){var $marker=$('<span>').insertBefore(this.$el);this.$el.detach().attr('type','date').insertAfter($marker);$marker.remove();return true;}
-return false;},init:function(){var $months=this.nav('months',1);var $years=this.nav('years',12);var $nav=$('<div>').addClass('nav').append($months,$years);this.$month=$('.name',$months);this.$year=$('.name',$years);$calendar=$("<div>").addClass('calendar');for(var i=0;i<this.shortDayNames.length;i++){$calendar.append('<div class="dow">'+this.shortDayNames[(i+this.startOfWeek)%7]+'</div>');};this.$days=$('<div>').addClass('days');$calendar.append(this.$days);this.$picker=$('<div>').click(function(e){e.stopPropagation()}).mousedown(function(e){e.preventDefault()}).addClass('datepicker').append($nav,$calendar).insertAfter(this.$el);this.$el.focus(this.show).click(this.show).change($.proxy(function(){this.selectDate();},this));this.selectDate();this.hide();},nav:function(c,months){var $subnav=$('<div>'+'<span class="prev button">&larr;</span>'+'<span class="name"></span>'+'<span class="next button">&rarr;</span>'+'</div>').addClass(c)
+return false;},init:function(){var $months=this.nav('months',1);var $years=this.nav('years',12);var $nav=$('<div>').addClass('nav').append($months,$years);this.$month=$('.name',$months);this.$year=$('.name',$years);$calendar=$("<div>").addClass('calendar');for(var i=0;i<this.shortDayNames.length;i++){$calendar.append('<div class="dow">'+this.shortDayNames[(i+this.startOfWeek)%7]+'</div>');};this.$days=$('<div>').addClass('days');$calendar.append(this.$days);this.$picker=$('<div>').click(function(e){e.stopPropagation()})
+.mousedown(function(e){e.preventDefault()}).addClass('datepicker').append($nav,$calendar).insertAfter(this.$el);this.$el.focus(this.show).click(this.show).change($.proxy(function(){this.selectDate();},this));this.selectDate();this.hide();},nav:function(c,months){var $subnav=$('<div>'+'<span class="prev button">&larr;</span>'+'<span class="name"></span>'+'<span class="next button">&rarr;</span>'+'</div>').addClass(c)
 $('.prev',$subnav).click($.proxy(function(){this.ahead(-months,0)},this));$('.next',$subnav).click($.proxy(function(){this.ahead(months,0)},this));return $subnav;},updateName:function($area,s){var cur=$area.find('.fg').text(),$fg=$('<div>').addClass('fg').append(s);$area.empty();if(cur!=s){var $bg=$('<div>').addClass('bg');$area.append($bg,$fg);$bg.fadeOut('slow',function(){$(this).remove();});}else{$area.append($fg);}},selectMonth:function(date){var newMonth=new Date(date.getFullYear(),date.getMonth(),1);if(!this.curMonth||!(this.curMonth.getFullYear()==newMonth.getFullYear()&&this.curMonth.getMonth()==newMonth.getMonth())){this.curMonth=newMonth;var rangeStart=this.rangeStart(date),rangeEnd=this.rangeEnd(date);var num_days=this.daysBetween(rangeStart,rangeEnd);this.$days.empty();for(var ii=0;ii<=num_days;ii++){var thisDay=new Date(rangeStart.getFullYear(),rangeStart.getMonth(),rangeStart.getDate()+ii,12,00);var $day=$('<div>').attr('date',this.format(thisDay));$day.text(thisDay.getDate());if(thisDay.getMonth()!=date.getMonth()){$day.addClass('overlap');};this.$days.append($day);};this.updateName(this.$month,this.monthNames[date.getMonth()]);this.updateName(this.$year,this.curMonth.getFullYear());$('div',this.$days).click($.proxy(function(e){var $targ=$(e.target);this.update($targ.attr("date"));if(!$targ.hasClass('overlap')){this.hide();}},this));$("[date='"+this.format(new Date())+"']",this.$days).addClass('today');};$('.selected',this.$days).removeClass('selected');$('[date="'+this.selectedDateStr+'"]',this.$days).addClass('selected');},selectDate:function(date){if(typeof(date)=="undefined"){date=this.parse(this.$el.val());};if(!date)date=new Date();this.selectedDate=date;this.selectedDateStr=this.format(this.selectedDate);this.selectMonth(this.selectedDate);},update:function(s){this.$el.val(s).change();},show:function(e){e&&e.stopPropagation();clearDatePickers(this);var offset=this.$el.offset();this.$picker.css({top:offset.top+this.$el.outerHeight()+2,left:offset.left}).show();$('html').on('keydown',this.keyHandler);},hide:function(){this.$picker.hide();$('html').off('keydown',this.keyHandler);},keyHandler:function(e){switch(e.keyCode)
 {case 9:case 27:this.hide();return;case 13:this.update(this.selectedDateStr);this.hide();break;case 38:this.ahead(0,-7);break;case 40:this.ahead(0,7);break;case 37:this.ahead(0,-1);break;case 39:this.ahead(0,1);break;default:return;}
 e.preventDefault();},parse:function(s){var m;if((m=s.match(/^(\d{4,4})-(\d{2,2})-(\d{2,2})$/))){return new Date(m[1],m[2]-1,m[3]);}else{return null;}},format:function(date){var month=(date.getMonth()+1).toString(),dom=date.getDate().toString();if(month.length===1){month='0'+month;}
@@ -902,19 +909,19 @@ if(dom.length===1){dom='0'+dom;}
 return date.getFullYear()+'-'+month+"-"+dom;},ahead:function(months,days){this.selectDate(new Date(this.selectedDate.getFullYear(),this.selectedDate.getMonth()+months,this.selectedDate.getDate()+days));},proxy:function(meth){this[meth]=$.proxy(this[meth],this);return this;},daysBetween:function(start,end){var start=Date.UTC(start.getFullYear(),start.getMonth(),start.getDate());var end=Date.UTC(end.getFullYear(),end.getMonth(),end.getDate());return(end-start)/86400000;},findClosest:function(dow,date,direction){var difference=direction*(Math.abs(date.getDay()-dow-(direction*7))%7);return new Date(date.getFullYear(),date.getMonth(),date.getDate()+difference);},rangeStart:function(date){return this.findClosest(this.startOfWeek,new Date(date.getFullYear(),date.getMonth()),-1);},rangeEnd:function(date){return this.findClosest((this.startOfWeek-1)%7,new Date(date.getFullYear(),date.getMonth()+1,0),1);}};$.fn.datepicker=function(options){return this.each(function(){new DatePicker(this,options);});};$(function(){$(selector).datepicker();$('html').click(clearDatePickers);});$.fn.datepicker.DatePicker=DatePicker;$.fn.datepicker.defaults={monthNames:["January","February","March","April","May","June","July","August","September","October","November","December"],shortDayNames:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],startOfWeek:1};}(window.jQuery||window.ender);(function($)
 {var _baseDate=new Date();_baseDate.setHours(0);_baseDate.setMinutes(0);var _ONE_DAY=86400;var _defaults={className:null,minTime:null,maxTime:null,durationTime:null,step:30,showDuration:false,timeFormat:'g:ia',scrollDefaultNow:false,scrollDefaultTime:false,onSelect:function(){}};var methods={init:function(options)
 {return this.each(function()
-{var self=$(this);if(self[0].tagName=='SELECT'){var input=$('<input />');var attrs={'type':'text','value':self.val()};var raw_attrs=self[0].attributes;for(var i=0;i<raw_attrs.length;i++){attrs[raw_attrs[i].nodeName]=raw_attrs[i].nodeValue;}
+{var self=$(this); if(self[0].tagName=='SELECT'){var input=$('<input />');var attrs={'type':'text','value':self.val()};var raw_attrs=self[0].attributes;for(var i=0;i<raw_attrs.length;i++){attrs[raw_attrs[i].nodeName]=raw_attrs[i].nodeValue;}
 input.attr(attrs);self.replaceWith(input);self=input;}
 var settings=$.extend({},_defaults);if(options){settings=$.extend(settings,options);}
 if(settings.minTime){settings.minTime=_time2int(settings.minTime);}
 if(settings.maxTime){settings.maxTime=_time2int(settings.maxTime);}
 if(settings.durationTime){settings.durationTime=_time2int(settings.durationTime);}
 self.data("settings",settings);self.attr('autocomplete','off');self.click(methods.show).focus(methods.show).keydown(_keyhandler);self.addClass('ui-timepicker-input');if(self.val()){var prettyTime=_int2time(_time2int(self.val()),settings.timeFormat);self.val(prettyTime);}
-var container=$('<span class="ui-timepicker-container" />');self.wrap(container);$("body").attr("tabindex",-1).focusin(function(e){if($(e.target).closest('.ui-timepicker-container').length==0){methods.hide();}});});},show:function(e)
-{var self=$(this);var list=self.siblings('.ui-timepicker-list');if(self.hasClass('ui-timepicker-hideme')){self.removeClass('ui-timepicker-hideme');list.hide();return;}
-if(list.is(':visible')){return;}
-methods.hide();if(list.length==0){_render(self);list=self.siblings('.ui-timepicker-list');}
-if((self.offset().top+self.outerHeight(true)+list.outerHeight())>$(window).height()+$(window).scrollTop()){list.css({"top":self.position().top-list.outerHeight()});}else{list.css({"top":self.position().top+self.outerHeight()});}
-list.show();var settings=self.data("settings");var selected=list.find('.ui-timepicker-selected');if(!selected.length){if(self.val()){selected=_findRow(self,list,_time2int(self.val()));}else if(settings.minTime===null&&settings.scrollDefaultNow){selected=_findRow(self,list,_time2int(new Date()));}else if(settings.scrollDefaultTime!==false){selected=_findRow(self,list,_time2int(settings.scrollDefaultTime));}}
+var container=$('<span class="ui-timepicker-container" />');self.wrap(container); $("body").attr("tabindex",-1).focusin(function(e){if($(e.target).closest('.ui-timepicker-container').length==0){methods.hide();}});});},show:function(e)
+{var self=$(this);var list=self.siblings('.ui-timepicker-list'); if(self.hasClass('ui-timepicker-hideme')){self.removeClass('ui-timepicker-hideme');list.hide();return;}
+if(list.is(':visible')){return;} 
+methods.hide(); if(list.length==0){_render(self);list=self.siblings('.ui-timepicker-list');}
+if((self.offset().top+self.outerHeight(true)+list.outerHeight())>$(window).height()+$(window).scrollTop()){ list.css({"top":self.position().top-list.outerHeight()});}else{ list.css({"top":self.position().top+self.outerHeight()});}
+list.show();var settings=self.data("settings"); var selected=list.find('.ui-timepicker-selected');if(!selected.length){if(self.val()){selected=_findRow(self,list,_time2int(self.val()));}else if(settings.minTime===null&&settings.scrollDefaultNow){selected=_findRow(self,list,_time2int(new Date()));}else if(settings.scrollDefaultTime!==false){selected=_findRow(self,list,_time2int(settings.scrollDefaultTime));}}
 if(selected&&selected.length){var topOffset=list.scrollTop()+selected.position().top-selected.outerHeight();list.scrollTop(topOffset);}else{list.scrollTop(0);}},hide:function(e)
 {$('.ui-timepicker-list:visible').each(function(){var list=$(this);var self=list.siblings('.ui-timepicker-input');_selectValue(self);list.hide();});},option:function(key,value)
 {var self=$(this);var settings=self.data("settings");var list=self.siblings('.ui-timepicker-list');if(typeof key=='object'){settings=$.extend(settings,key);}else if(typeof key=='string'&&typeof value!='undefined'){settings[key]=value;}else if(typeof key=='string'){return settings[key];}
@@ -923,25 +930,25 @@ if(settings.maxTime){settings.maxTime=_time2int(settings.maxTime);}
 if(settings.durationTime){settings.durationTime=_time2int(settings.durationTime);}
 self.data("settings",settings);list.remove();},getSecondsFromMidnight:function()
 {return _time2int($(this).val());},setTime:function(value)
-{var self=$(this);var prettyTime=_int2time(_time2int(value),self.data('settings').timeFormat);self.val(prettyTime);}};function _render(self)
+{var self=$(this);var prettyTime=_int2time(_time2int(value),self.data('settings').timeFormat);self.val(prettyTime);}}; function _render(self)
 {var settings=self.data("settings");var list=self.siblings('.ui-timepicker-list');if(list&&list.length){list.remove();}
 list=$('<ul />');list.attr('tabindex',-1);list.addClass('ui-timepicker-list');if(settings.className){list.addClass(settings.className);}
 var zIndex=self.css('zIndex');zIndex=(zIndex+0==zIndex)?zIndex+2:2;list.css({'display':'none','position':'absolute',"left":(self.position().left),'zIndex':zIndex});if(settings.minTime!==null&&settings.showDuration){list.addClass('ui-timepicker-with-duration');}
-var durStart=(settings.durationTime!==null)?settings.durationTime:settings.minTime;var start=(settings.minTime!==null)?settings.minTime:0;var end=(settings.maxTime!==null)?settings.maxTime:(start+_ONE_DAY-1);if(end<=start){end+=_ONE_DAY;}
+var durStart=(settings.durationTime!==null)?settings.durationTime:settings.minTime;var start=(settings.minTime!==null)?settings.minTime:0;var end=(settings.maxTime!==null)?settings.maxTime:(start+_ONE_DAY-1);if(end<=start){ end+=_ONE_DAY;}
 for(var i=start;i<=end;i+=settings.step*60){var timeInt=i%_ONE_DAY;var row=$('<li />');row.data('time',timeInt)
 row.text(_int2time(timeInt,settings.timeFormat));if(settings.minTime!==null&&settings.showDuration){var duration=$('<span />');duration.addClass('ui-timepicker-duration');duration.text(' ('+_int2duration(i-durStart)+')');row.append(duration)}
 list.append(row);}
-self.after(list);_setSelected(self,list);list.delegate('li','click',{'timepicker':self},function(e){self.addClass('ui-timepicker-hideme');self[0].focus();list.find('li').removeClass('ui-timepicker-selected');$(this).addClass('ui-timepicker-selected');_selectValue(self);list.hide();});};function _findRow(self,list,value)
+self.after(list);_setSelected(self,list);list.delegate('li','click',{'timepicker':self},function(e){self.addClass('ui-timepicker-hideme');self[0].focus(); list.find('li').removeClass('ui-timepicker-selected');$(this).addClass('ui-timepicker-selected');_selectValue(self);list.hide();});};function _findRow(self,list,value)
 {if(!value&&value!==0){return false;}
-var settings=self.data("settings");var out=false;list.find('li').each(function(i,obj){var jObj=$(obj);if(Math.abs(jObj.data('time')-value)<=settings.step*30){out=jObj;return false;}});return out;}
+var settings=self.data("settings");var out=false; list.find('li').each(function(i,obj){var jObj=$(obj); if(Math.abs(jObj.data('time')-value)<=settings.step*30){out=jObj;return false;}});return out;}
 function _setSelected(self,list)
 {var timeValue=_time2int(self.val());var selected=_findRow(self,list,timeValue);if(selected&&selected.data('time')==timeValue)selected.addClass('ui-timepicker-selected')}
 function _keyhandler(e)
-{var self=$(this);var list=self.siblings('.ui-timepicker-list');if(!list.is(':visible')){if(e.keyCode==40){self.focus();}else{return true;}};switch(e.keyCode){case 13:_selectValue(self);methods.hide.apply(this);e.preventDefault();return false;break;case 38:var selected=list.find('.ui-timepicker-selected');if(!selected.length){var selected;list.children().each(function(i,obj){if($(obj).position().top>0){selected=$(obj);return false;}});selected.addClass('ui-timepicker-selected');}else if(!selected.is(':first-child')){selected.removeClass('ui-timepicker-selected');selected.prev().addClass('ui-timepicker-selected');if(selected.prev().position().top<selected.outerHeight()){list.scrollTop(list.scrollTop()-selected.outerHeight());}}
-break;case 40:var selected=list.find('.ui-timepicker-selected');if(selected.length==0){var selected;list.children().each(function(i,obj){if($(obj).position().top>0){selected=$(obj);return false;}});selected.addClass('ui-timepicker-selected');}else if(!selected.is(':last-child')){selected.removeClass('ui-timepicker-selected');selected.next().addClass('ui-timepicker-selected');if(selected.next().position().top+2*selected.outerHeight()>list.outerHeight()){list.scrollTop(list.scrollTop()+selected.outerHeight());}}
+{var self=$(this);var list=self.siblings('.ui-timepicker-list');if(!list.is(':visible')){if(e.keyCode==40){self.focus();}else{return true;}};switch(e.keyCode){case 13: _selectValue(self);methods.hide.apply(this);e.preventDefault();return false;break;case 38: var selected=list.find('.ui-timepicker-selected');if(!selected.length){var selected;list.children().each(function(i,obj){if($(obj).position().top>0){selected=$(obj);return false;}});selected.addClass('ui-timepicker-selected');}else if(!selected.is(':first-child')){selected.removeClass('ui-timepicker-selected');selected.prev().addClass('ui-timepicker-selected');if(selected.prev().position().top<selected.outerHeight()){list.scrollTop(list.scrollTop()-selected.outerHeight());}}
+break;case 40: var selected=list.find('.ui-timepicker-selected');if(selected.length==0){var selected;list.children().each(function(i,obj){if($(obj).position().top>0){selected=$(obj);return false;}});selected.addClass('ui-timepicker-selected');}else if(!selected.is(':last-child')){selected.removeClass('ui-timepicker-selected');selected.next().addClass('ui-timepicker-selected');if(selected.next().position().top+2*selected.outerHeight()>list.outerHeight()){list.scrollTop(list.scrollTop()+selected.outerHeight());}}
 break;case 27:list.find('li').removeClass('ui-timepicker-selected');list.hide();break;case 9:case 16:case 17:case 18:case 19:case 20:case 33:case 34:case 35:case 36:case 37:case 39:case 45:return;default:list.find('li').removeClass('ui-timepicker-selected');return;}};function _selectValue(self)
 {var settings=self.data('settings')
-var list=self.siblings('.ui-timepicker-list');var timeValue=null;var cursor=list.find('.ui-timepicker-selected');if(cursor.length){var timeValue=cursor.data('time');}else if(self.val()){var timeValue=_time2int(self.val());_setSelected(self,list);}
+var list=self.siblings('.ui-timepicker-list');var timeValue=null;var cursor=list.find('.ui-timepicker-selected');if(cursor.length){ var timeValue=cursor.data('time');}else if(self.val()){ var timeValue=_time2int(self.val());_setSelected(self,list);}
 if(timeValue!==null){var timeString=_int2time(timeValue,settings.timeFormat);self.attr('value',timeString);}
 settings.onSelect.call(self);self.trigger('change');};function _int2duration(seconds)
 {var minutes=Math.round(seconds/60);if(minutes<60){return minutes+' mins'}else if(minutes==60){return'1 hr';}else{var hours=minutes/60
@@ -952,7 +959,7 @@ return output;};function _time2int(timeString)
 {if(timeString=='')return null;if(timeString+0==timeString)return timeString;if(typeof(timeString)=='object'){timeString=timeString.getHours()+':'+timeString.getMinutes();}
 var d=new Date(0);var time=timeString.toLowerCase().match(/(\d+)(?::(\d\d))?\s*([pa]?)/);if(!time){return null;}
 var hour=parseInt(time[1]*1);if(time[3]){if(hour==12){var hours=(time[3]=='p')?12:0;}else{var hours=(hour+(time[3]=='p'?12:0));}}else{var hours=hour;}
-var minutes=(time[2]*1||0);return hours*3600+minutes*60;};$.fn.timepicker=function(method)
+var minutes=(time[2]*1||0);return hours*3600+minutes*60;}; $.fn.timepicker=function(method)
 {if(methods[method]){return methods[method].apply(this,Array.prototype.slice.call(arguments,1));}
 else if(typeof method==="object"||!method){return methods.init.apply(this,arguments);}
 else{$.error("Method "+method+" does not exist on jQuery.timepicker");}};})(jQuery);$('input[type="time"]').timepicker({'scrollDefaultNow':true});(function(){var SelectParser;SelectParser=(function(){function SelectParser(){this.options_index=0;this.parsed=[];}
@@ -986,4 +993,4 @@ if(!this.results_showing)return this.results_show();};Chosen.prototype.keyup_arr
 return this.pending_backstroke=null;};Chosen.prototype.keydown_checker=function(evt){var stroke,_ref;stroke=(_ref=evt.which)!=null?_ref:evt.keyCode;this.search_field_scale();if(stroke!==8&&this.pending_backstroke)this.clear_backstroke();switch(stroke){case 8:this.backstroke_length=this.search_field.val().length;break;case 9:if(this.results_showing&&!this.is_multiple)this.result_select(evt);this.mouse_on_container=false;break;case 13:evt.preventDefault();break;case 38:evt.preventDefault();this.keyup_arrow();break;case 40:this.keydown_arrow();break;}};Chosen.prototype.search_field_scale=function(){var dd_top,div,h,style,style_block,styles,w,_i,_len;if(this.is_multiple){h=0;w=0;style_block="position:absolute; left: -1000px; top: -1000px; display:none;";styles=['font-size','font-style','font-weight','font-family','line-height','text-transform','letter-spacing'];for(_i=0,_len=styles.length;_i<_len;_i++){style=styles[_i];style_block+=style+":"+this.search_field.css(style)+";";}
 div=$('<div />',{'style':style_block});div.text(this.search_field.val());$('body').append(div);w=div.width()+25;div.remove();if(w>this.f_width-10)w=this.f_width-10;this.search_field.css({'width':w+'px'});dd_top=this.container.height();return this.dropdown.css({"top":dd_top+"px"});}};Chosen.prototype.generate_random_id=function(){var string;string="sel"+this.generate_random_char()+this.generate_random_char()+this.generate_random_char();while($("#"+string).length>0){string+=this.generate_random_char();}
 return string;};return Chosen;})(AbstractChosen);get_side_border_padding=function(elmt){var side_border_padding;return side_border_padding=elmt.outerWidth()-elmt.width();};root.get_side_border_padding=get_side_border_padding;}).call(this);$(function(){$('a.hg-submenu').click(function(){return false;});});function activate_chosen(selector){if(!navigator.userAgent.match(/(iPod|iPad|iPhone|Android)/)){$(selector).chosen({allow_single_deselect:true});}}
-$(function(){activate_chosen('select');var matchtab=function(){var url=document.location.toString();if(url.match('#/')){$('.nav-tabs.nav-tabs-auto a[href=#'+url.split('#/')[1]+']').tab('show');}else if(url.match('#')){$('.nav-tabs.nav-tabs-auto a[href=#'+url.split('#')[1]+']').tab('show');}};$(window).bind('hashchange',matchtab);matchtab();$('.nav-tabs.nav-tabs-auto a').on('shown',function(e){window.location.hash='#/'+e.target.hash.slice(1);});var url=document.location.toString();if(!url.match('#')){$('.nav-tabs.nav-tabs-auto a').filter(':first').tab('show');}});
+$(function(){activate_chosen('select');var matchtab=function(){var url=document.location.toString();if(url.match('#/')){$('.nav-tabs.nav-tabs-auto a[href=#'+url.split('#/')[1]+']').tab('show');}else if(url.match('#')){$('.nav-tabs.nav-tabs-auto a[href=#'+url.split('#')[1]+']').tab('show');}}; $(window).bind('hashchange',matchtab); matchtab(); $('.nav-tabs.nav-tabs-auto a').on('shown',function(e){window.location.hash='#/'+e.target.hash.slice(1);});var url=document.location.toString();if(!url.match('#')){ $('.nav-tabs.nav-tabs-auto a').filter(':first').tab('show');}});

@@ -1,39 +1,24 @@
-{% extends "inc/layout.html" %}
+{% extends "layout.html" %}
+{% from "macros.html" import itemlisttable %}
+{% block title %}Confirm and Pay{% endblock %}
+{% block headline %}{% endblock %}
 {% block content %}
-<table>
 
-<tr>
-  <td class="datatype">Amount</td> <td class="datavalue">0.0</td>
-</tr>
-
-<tr>
-<td class="datatype">Name</td> <td class="datavalue">{{ address.name }}</td>
-</tr>
-
-<tr>
-<td class="datatype">Address</td> <td class="datavalue">{{ address.address }}</td>
-</tr>
-
-<tr>
-<td class="datatype">City</td> <td class="datavalue">{{ address.city }}</td>
-</tr>
-
-<tr>
-<td class="datatype">State</td> <td class="datavalue">{{ address.state }}</td>
-</tr>
-
-<tr>
-<td class="datatype">Country</td> <td class="datavalue">{{ address.country }}</td>
-</tr>
-
-<tr>
-<td class="datatype">Postal Code</td> <td class="datavalue">{{ address.postal_code }}</td>
-</tr>
-
-
-
-</table>
-
+<div class="page-header">
+	<h3>Invoice #{{ invoice.url_id }}</h3>
+    <h1>{{ self.title() }}</h1>
+</div>
+<div class="row section">
+    <div class="span7">
+    	<h4>Billing Address</h4>
+    	<p>{{ address.name }}<br/>
+    		{{ address.address|safe }}<br/>
+    		{{ address.city }} - {{ address.postal_code }}<br/>
+    	{{ address.state }}, {{ address.country }}</p>
+    </div>
+</div>
+<h4>Order Details</h4>
+{{ itemlisttable(invoice, workflow) }}
 <form  method="post" action="https://secure.ebs.in/pg/ma/sale/pay/" name="frmTransaction" id="frmTransaction">
 <input name="account_id" type="hidden" value="{{ config['EBS_ACCOUNT'] }}" />
 <input name="return_url" type="hidden" value="{{ url_for('ebs_response', _external=True)}}?DR={DR}" />
@@ -49,12 +34,12 @@
 <input name="country" type="hidden" value="{{ address.country }}" />
 <input name="email" type="hidden" value="{{ address.email }}" />
 <input name="ship_name" type="hidden" value="{{ address.name }}" />
-<input name="ship_address" type="hidden" value="{{ ' '.join([address.address1, address.address2]) }}" />
+<input name="ship_address" type="hidden" value="{{ address.address }}" />
 <input name="ship_city" type="hidden" value="{{ address.city }}" />
 <input name="ship_state" type="hidden" value="{{ address.state }}" />
 <input name="ship_postal_code" type="hidden" value="{{ address.postal_code }}" />
 <input name="ship_country" type="hidden" value="{{ address.country }}" />
 
-<input type="submit" value="Confirm and Pay" />
+<button type="submit" class="btn btn-primary">Confirm and Pay</button>
 </form>
 {% endblock %}

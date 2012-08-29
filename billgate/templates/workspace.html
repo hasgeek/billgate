@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block title %}{{ workspace.title }}{% endblock %}
+{% block content %}
+
+<div class="row section">
+    <ul class="workspace-details">
+    <a href="{{url_for('workspace_edit', workspace=g.workspace.name) }}"><span class="icon-edit"> Edit details</span></a>
+    </ul>
+</div>
+
+<div class="row section">
+    <ul class="workspace-details">
+            <li><span class="icon-home">{{ workspace.fullname }}</span></li>
+            <li><span class="icon-envelope">{{ workspace.address|safe }}</span></li>
+    </ul>
+</div>
+<div> <h2> Registration Details</h2> </div>
+<div class="row section">
+    <ul class="workspace-details">
+            {% if workspace.pan %} <li><span class="icon-certificate">PAN: {{ workspace.pan }}</span></li> {% endif %}
+            {% if workspace.tan %} <li><span class="icon-certificate">TAN: {{ workspace.tan }}</span></li> {% endif %}
+            {% if workspace.tin %} <li><span class="icon-certificate">TIN: {{ workspace.tin }}</span></li> {% endif %}
+            {% if workspace.cin %} <li><span class="icon-certificate">CIN: {{ workspace.cin }}</span></li> {% endif %}
+    </ul>
+</div>
+
+
+
+
+{% endblock %}

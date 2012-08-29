@@ -54,8 +54,8 @@
   {% if message %}<p>{{ message }}</p>{% endif %}
   <div style="display:none;"><input type="hidden" name="form.id" value="{{ formid }}" /></div>
   {{ form.hidden_tag() }}
-  {% if form.csrf.errors %}
-    {% for error in form.csrf.errors %}<div class="error">{{ error }}</div>{% endfor %}
+  {% if form.csrf_token.errors %}
+    {% for error in form.csrf_token.errors %}<div class="error">{{ error }}</div>{% endfor %}
   {% endif %}
   {% for field in form %}
     {% if field.widget.input_type and field.widget.input_type == 'hidden' -%}
@@ -83,3 +83,110 @@
 </script>
 {%- endif %}
 {%- endmacro %}
+
+{% macro itemlisttable(invoice, workflow, editlinks=true) %}
+  <table id="lineitems-table" class="table table-bordered table-condensed">
+    <thead>
+        <th class="num">#</th>
+        <th>Item</th>
+        <th class="num">Rate</th>
+        <th class="num">Quantity</th>
+        <th class="num">Charge</th>
+        <th class="num">Tax Rate</th>
+        <th class="num">Amount</th>
+      </thead>
+    <tbody>
+      {% for lineitem in invoice.line_items %}
+        <tr>
+          <td class="num">{{ loop.index }}</td>
+          <td data-field="item" data-value="{{ lineitem.category.id }}">{{ lineitem.category.title }}</td>
+          <td data-field="rate" data-value="{{ lineitem.category.price_before_tax }}" class="num">{{ lineitem.category.price_before_tax }}</td>
+          <td data-field="quantity" data-value="{{ lineitem.quantity }}" class="num">{{ lineitem.quantity }}</td>
+          <td data-field="charge" data-value="{{ lineitem.line_amount_before_tax}}" class="num">{{ lineitem.line_amount_before_tax|format_currency }}</td>
+          <td data-field="taxrate" data-value="{{ lineitem.categorytax_rate }}" class="num">{{ lineitem.category.tax_rate }} %</td>
+          <td data-field="total" data-value="{{ lineitem.line_total }}" class="num">{{ lineitem.line_total|format_currency }}
+          {%- if editlinks and workflow.can_edit() %}
+            <a href="{{ url_for('line_item_delete', workspace=invoice.workspace.name, invoice=invoice.url_name, line_item=lineitem.id) }}" class="link-util lineitem-delete no-print" data-id="{{ lineitem.id }}" title="Delete"><i class="icon-remove"></i></a>
+          {%- endif %}
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="7"><em>(No items recorded)</em></td>
+        </tr>
+      {% endfor %}
+      <tr>
+        <th class="num"></th>
+        <th colspan="5">Total</th>
+        <th class="num">{{ invoice.currency }} {{ invoice.total_value|format_currency }}</th>
+      </tr>
+    </tbody>
+  </table>
+{% endmacro %}
+
+{% macro newlineitem(form) %}
+  <form class="form-inline no-print" id="newlineitem" method="POST">
+    {#{% if form.csrf.errors %}
+      <div class="alert alert-error">An error occured. Please submit again</div>
+    {% endif %}#}
+    {{ form.hidden_tag() }}
+    <input type="hidden" name="id" id="lineitem-id" value="{{ form.id.data or '' }}">
+    <span class="control-group{% if form.category.errors %} error{% endif %}"><select data-placeholder="Category" class="input-medium span3" name="category" id="lineitem-category">
+      <option value=""></option>
+      {% for c in form.category.choices %}
+        <option value="{{ c[0] }}">{{ c[1] }}</option>
+      {% endfor %}
+    </select></span>
+    <span class="control-group{% if form.quantity.errors %} error{% endif %}"><input type="text" name="quantity" id="lineitem-quantity" class="input-xlarge span1" placeholder="Quantity" value="{{ form.quantity.data or '' }}"></span>
+    <input type="submit" class="btn btn-primary" id="lineitem-add" value="{% if form.id.data %}Save{% else %}Add{% endif %}">
+    <a href="#" class="btn" id="lineitem-cancel">Cancel</a>
+    <span class="loading hidden"></span>
+  </form>
+{% endmacro %}
+
+{% macro lineitem_script() %}
+  <script type="text/javascript">
+    $(function() {
+      $("#newlineitem").ajaxForm({
+        target: '#newlineitem',
+        replaceTarget: true,
+      });
+      $("#lineitem-cancel").click(function(e) {
+        alert("Cancel");
+        $("#newlineitem").clearForm();
+        $("#lineitem-id").val("");
+        $("#lineitem-add").val("Add")
+        $("tr.alert-info").removeClass('alert-info');
+        $("#newlineitem .alert").remove();
+        $("#newlineitem.control-group.error").removeClass("error");
+        $("#lineitem-category").trigger("liszt:updated")
+        return false;
+      });
+      $("#lineitem-quantity").keydown(function(e) {
+        if (e.keyCode == 27) {
+          $("#lineitem-cancel").trigger('click');
+        };
+      });
+    });
+  </script>
+{% endmacro %}
+
+{% macro lineitem_table_script() %}
+  <script type="text/javascript">
+    $(function() {
+      $('.lineitem-edit').click(function(e) {
+        e.stopPropagation();
+        var row = $(this).closest('tr');
+        $("#lineitem-cancel").trigger('click');
+        $(row).addClass('alert-info');
+        $("#lineitem-id").val($(this).attr('data-id'));
+        $("#lineitem-category").val(row.find('[data-field="category"]').attr('data-value'));
+        $("#lineitem-category").trigger("liszt:updated")
+        $("#lineitem-quantity").val(row.find('[data-field="quantity"]').attr('data-value'));
+        $("#lineitem-add").val("Save");
+        $("#lineitem-category").focus();
+        return false;
+      });
+    });
+  </script>
+{% endmacro %}

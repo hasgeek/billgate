@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% block title %}Invoices{% endblock %}
+{% block content %}
+  <div class="tabbable">
+    <ul class="nav nav-tabs nav-tabs-auto">
+      {% for s in invoice_states %}
+        <li><a href="#invoice-{{ s.name }}" data-toggle="tab">{{ s.title }}</a></li>
+      {% endfor %}
+    </ul>
+    <div class="tab-content">
+      {% for s in invoice_states %}
+        <div class="tab-pane" id="invoice-{{ s.name }}">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>Owner</th>
+                <th class="num">Amount</th>
+                <th>Last Updated</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in invoices[s.name] %}
+                <tr class="link">
+                  {%- set invoicelink = url_for('invoice', workspace=g.workspace.name, invoice=i.url_name) %}
+                  <td><a href="{{ invoicelink }}">#{{ i.url_id }}</a></td>
+                  <td><a href="{{ invoicelink }}">{{ i.title }}</a></td>
+                  <td><a href="{{ invoicelink }}">{{ i.user.fullname }}</a></td>
+                  <td class="num"><a href="{{ invoicelink }}">{{ i.total_value|format_currency }}</a></td>
+                  <td><a href="{{ invoicelink }}">{{ i.datetime|longdate }}</a></td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="7"><em>(No invoices found)</em></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  <p>
+    <a class="btn" href="{{ url_for('invoice_new', workspace=g.workspace.name)}}">Add a new Invoice...</a>
+  </p>
+{% endblock %}

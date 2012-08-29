@@ -1,0 +1,105 @@
+{% extends "layout.html" %}
+{% from "macros.html" import itemlisttable, newlineitem, lineitem_script, lineitem_table_script %}
+{% block title %}{{ invoice.title }}{% endblock %}
+{% block headline %}{% endblock %}
+{% block content %}
+  <div class="row section">
+    <div class="span6 print-span8">
+      {%- if workflow.proforma() and invoice.user == g.user %}
+        <div class="alert alert-info no-print">
+          <a class="close" data-dismiss="alert">&times;</a>
+          You cannot edit this invoice because it is awaiting review by a reviewer. 
+        </div>
+      {%- endif %}
+
+      <div class="page-header">
+        <h3>Invoice #{{ invoice.url_id }}</h3>
+        <h1>{{ self.title() }} </h1>
+        <a href="{{ url_for('select_address', workspace=workspace.name, invoice=invoice.url_name) }}">
+          <button class="btn btn-primary">Pay Now</button>
+        </a>
+        <a href="">
+          <button class="btn">Send Email</button>
+        </a>
+      </div>
+      <br/>
+      <div class="section">{{ invoice.description|safe }}</div>
+    </div>
+    <div class="span3 print-span4">
+        <ul class="well nav nav-list section">
+            <li><span class="icon-user">{{ workspace.fullname }}</span></li>
+            <li><span class="icon-envelope">{{ workspace.address|safe }}</span></li>
+            {% if workspace.pan %} <li><span class="icon-certificate">PAN: {{ workspace.pan }}</span></li> {% endif %}
+            {% if workspace.tan %} <li><span class="icon-certificate">TAN: {{ workspace.tan }}</span></li> {% endif %}
+            {% if workspace.tin %} <li><span class="icon-certificate">TIN: {{ workspace.tin }}</span></li> {% endif %}
+            {% if workspace.cin %} <li><span class="icon-certificate">CIN: {{ workspace.cin }}</span></li> {% endif %}
+            <li><span class="icon-calendar">{{ invoice.datetime|longdate }}</span></li>
+            <li><span class="icon-cog">Status: {{ workflow.state.title }}</span></li>
+            {% if workflow.can_edit() -%}
+              <li class="no-print"><a href="{{ url_for('invoice_edit', workspace=g.workspace.name, invoice=invoice.url_name) }}"><span class="icon-pencil"> Edit details...</span></a></li>
+            {%- endif %}
+            {% if workflow.draft() -%}
+              <li class="no-print"><a href="{{ url_for('invoice_delete', workspace=g.workspace.name, invoice=invoice.url_name) }}"><span class="icon-trash">Delete...</span></a></li>
+            {% endif %}
+        </ul>
+    </div>
+  </div>
+  {% if workflow.can_edit() %}
+    {{ newlineitem(lineitemform) }}
+  {% endif %}
+  {{ itemlisttable(invoice, workflow) }}
+  {% if transitions %}
+    <div class="form-actions no-print">
+      {%- for transition in transitions.values() %}
+        <form class="form-inline form-button" method="POST" action="{{ url_for(transition.view, workspace=g.workspace.name, invoice=invoice.url_name) }}">
+          <button type="submit" data-description="{{ transition.description }}" class="btn{% if transition.category %} btn-{{ transition.category }}{% endif %} confirm-submit">{{ transition.title }}</button>
+        </form>
+      {%- endfor %}
+    </div>
+  {% endif %}
+  <div class="row print-only">
+    <div id="print-signature" class="span3 offset6 print-span4 print-offset8">
+      <p>
+        <strong>{{ invoice.user.fullname }}</strong><br>
+        {{ invoice.datetime|longdate }}
+      </p>
+    </div>
+  </div>
+  <div class="modal fade" id="confirm-transition">
+    <div class="modal-header">
+      <a class="close" data-dismiss="modal">&times;</a>
+      <h2>Confirm action</h2>
+    </div>
+    <div class="modal-body">
+      <p>Please confirm the action.</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#" class="btn btn-primary" id="confirm-transition-confirm">Continue</a>
+      <a href="#" data-dismiss="modal" class="btn">Cancel</a>
+    </div>
+  </div>
+{% endblock %}
+{% block footerscripts %}
+{% if workflow.can_edit() %}
+  {{ lineitem_script() }}
+  {{ lineitem_table_script() }}
+{% endif %}
+  <script type="text/javascript">
+    $(function() {
+      $("form .confirm-submit").click(function(e) {
+        var button = $(this);
+        var form = button.closest('form');
+        e.preventDefault();
+        e.stopPropagation();
+        $("#confirm-transition-confirm").unbind('click').click(function() {
+          form.submit();
+          return false;
+        });
+        $("#confirm-transition").find('h2').html(button.html());
+        $("#confirm-transition").find('.modal-body').html(button.attr('data-description'));
+        $("#confirm-transition").modal();
+        return false;
+      });
+    });
+  </script>
+{% endblock %}

@@ -1,4 +1,4 @@
-{% extends "inc/layout.html" %}
+{% extends "layout.html" %}
 {% block titletags -%}
   <title>{{ config['SITE_TITLE'] }}</title>
   <meta name="DC.title" content="{{ config['SITE_TITLE'] }}"/>
@@ -9,12 +9,7 @@
 {% endblock %}
 
 {% block content %}
-<p>
-  <a href="http://hasgeek.in/">HasGeek</a> organizes events for geeks and operates a
-  <a href="http://jobs.hasgeek.in/">job board</a>. This is our upcoming billing site,
-  but there’s nothing here yet. When it becomes functional, you can buy a ticket to
-  one of our events, a sponsorship, or a listing on our job board.
-  </p>
+
 <h2>Documentation</h2>
 <ol>
   <li><a href="{{ url_for('terms') }}">Terms &amp; Conditions</a></li>

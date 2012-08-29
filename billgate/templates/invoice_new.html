@@ -1,4 +1,100 @@
-{% extends "inc/layout.html" %}
+{% extends "layout.html" %}
+{% from "macros.html" import itemlisttable %}
+{% from "baseframe/forms.html" import richtext_editor %}
+{% block title %}{{ invoice.title or "New Invoice"}}{% endblock %}
+{% block headline %}{% endblock %}
 {% block content %}
-{{ data['pay'] }}
+  <form method="POST">
+    <div class="row">
+      <div class="span6">
+        {% if invoice %}
+          <h3>Invoice #{{ invoice.url_name }}</h3>
+        {% endif %}
+        {%- if form.errors %}
+          <div class="alert alert-error">Please correct the indicated errors</div>
+        {%- endif %}
+        {{ form.hidden_tag() }}
+        <h2>{{ form.title.label.text }} <small>{{ form.title.description }}(required)</small></h2>
+        <span class="control-group{% if form.title.errors %} error{% endif %}">{{ form.title(class="input-primary span6", autofocus="autofocus") }}</span>
+        {%- for e in form.title.errors %}
+          <p class="help-block">{{ e }}</p>
+        {% endfor %}
+        <div class="section">
+          <h3>{{ form.description.label.text }} <small>{{ form.description.description }} (optional)</small></h3>
+          <span class="control-group{% if form.description.errors %} error{% endif %}">{{ form.description(class="span6") }}</span>
+          {%- for e in form.description.errors %}
+            <p class="help-block">{{ e }}</p>
+          {% endfor %}
+        </div>
+        <div class="row section">
+          <div class="span3">
+            {{ form.currency.label }}
+            <span class="control-group{% if form.currency.errors %} error{% endif %}">{{ form.currency }}</span>
+            {%- for e in form.description.errors %}
+              <p class="help-block">{{ e }}</p>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">{% if invoice.id %}Save{% else %}Continue{% endif %}</button>
+          <a href="{% if invoice %}{{ url_for('invoice', workspace=g.workspace.name, invoice=invoice.url_name) }}{% else %}{{ url_for('index', workspace=g.workspace.name) }}{% endif %}" class="btn">Cancel</a>
+        </div>
+      </div>
+      <div class="span3">
+        <ul class="well nav nav-list section">
+            <li><span class="icon-home">{{ workspace.fullname }}</span></li>
+            <li><span class="icon-envelope">{{ workspace.address|safe }}</span></li>
+            {% if workspace.pan %} <li><span class="icon-certificate">PAN: {{ workspace.pan }}</span></li> {% endif %}
+            {% if workspace.tan %} <li><span class="icon-certificate">TAN: {{ workspace.tan }}</span></li> {% endif %}
+            {% if workspace.tin %} <li><span class="icon-certificate">TIN: {{ workspace.tin }}</span></li> {% endif %}
+            {% if workspace.cin %} <li><span class="icon-certificate">CIN: {{ workspace.cin }}</span></li> {% endif %}  
+            <li><span class="icon-calendar">Created: Today</span></li>
+            {%- if invoice %}
+              <li><span class="icon-cog">Status: {{ workflow.state.title }}</span></li>
+            {%- else -%}
+              <li><span class="icon-cog">Status: Draft</span></li>
+            {%- endif %}
+
+        </ul>
+      </div>
+    </div>
+  </form>
+  {%- if invoice %}
+    {{ itemlisttable(invoice, workflow, editlinks=false) }}
+  {% else %}
+    <h3>Items <small>Click on Continue to add and edit items</small></h3>
+    <table id="lineitems-table" class="table table-bordered table-condensed table-disabled">
+      <thead>
+        <th class="num">#</th>
+        <th>Item</th>
+        <th class="num">Rate</th>
+        <th class="num">Quantity</th>
+        <th class="num">Charge</th>
+        <th class="num">Tax Rate</th>
+        <th class="num">Amount</th>
+      </thead>
+      <tbody>
+        {%- for counter in range(1,4) %}
+          <tr>
+            <td class="num">{% if loop.last %}&hellip;{% else %}{{ counter }}{% endif %}</td>
+            <td></td>
+            <td class="num"></td>
+            <td class="num"></td>
+            <td class="num"></td>
+            <td class="num"></td>
+            <td class="num"></td>
+          </tr>
+        {%- endfor %}
+        <tr>
+          <th class="num"></th>
+          <th colspan="5">Total</th>
+          <th class="num"></th>
+        </tr>
+      </tbody>
+    </table>
+  {% endif %}
+{% endblock %}
+
+{% block footerscripts %}
+  {{ richtext_editor(form.description) }}
 {% endblock %}

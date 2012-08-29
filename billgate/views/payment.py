@@ -1,5 +1,11 @@
+from flask import g, flash, url_for, render_template, request, redirect, abort, Response
+from coaster.views import load_model, load_models
+from coaster import format_currency as coaster_format_currency
+from baseframe.forms import render_form, render_redirect, render_delete_sqla, render_message, ConfirmDeleteForm
+
 from billgate import app
-from billgate.models import Address, Payment, Invoice
+from billgate.models import db
+from billgate.models import Address, Payment, Invoice, Workspace
 from billgate.views.login import lastuser
 from billgate.forms import AddressForm
 from flask import render_template, g, flash, json, redirect, url_for, request
@@ -9,143 +15,102 @@ from billgate.rc4 import crypt
 from datetime import datetime
 
 
-@app.route('/address/<ino>')
+@app.route('/<workspace>/invoices/<invoice>/billaddress', methods=['GET', 'POST'])
+@load_models(
+    (Workspace, {'name': 'workspace'}, 'workspace'),
+    (Invoice, {'url_name': 'invoice', 'workspace': 'workspace'}, 'invoice')
+    )
 @lastuser.requires_login
-def select_address(ino=None, form=None):
+def select_address(invoice, workspace):
     """
-    Select an Address or enter a new one.
-    """
-    if form is None:
-        form = AddressForm()
-    if ino is None:
-        return redirect(url_for('index'))
-    invoice = Invoice.objects(id=ino).first()
-    if invoice is None:
-        return redirect(url_for('index'))
-    session['invoice'] = invoice.id
-    context = {
-        'user': g.user,
-        'addresses': Address.objects(user=g.user),
-        'form': form,
-        'title': 'Select Billing Address',
-    }
-    return render_template('address.html', **context)
-
-@app.route('/address/<ino>', methods=['POST'])
-@lastuser.requires_login
-def process_select_address(ino=None):
-    """
-    Process a new address.
+    Select an Address or enter a new one. Session must contain invoice id if it exists
     """
     form = AddressForm()
     if form.validate_on_submit():
-        #TODO: Do something empty invoice
-        invoice = Invoice.objects(id=ino).first()
-        #TODO: Do something about no invoice matching this id
-        #Save the address first
-        address = Address()
+        address = Address(user=g.user)
+        db.session.add(address)
         form.populate_obj(address)
-        address.user = g.user
-        address.save()
-        #Save the address details into the invoice
-        for suffix in ['address1', 'address2', 'city', 'state', 'country']:
-            setattr(invoice, ''.join(['billing_', suffix]), getattr(address,
-                suffix))
-            setattr(invoice, ''.join(['shipping_', suffix]), getattr(address,
-                suffix))
-        invoice.name = address.name
-        invoice.telephone = address.phone
-        invoice.save()
-        return redirect(url_for('select_payment'))
-    else:
-        flash("Please check your details and try again.", 'error')
-        return select_address(form=form)
+        db.session.commit()
+        session['workspace'] = workspace.name
+        session['address'] = getattr(address, 'hashkey', None)
+        session['invoice'] = invoice.id
+        print "SESSION WORKSPACE:", session['workspace']
+        print "SESSION ADDRESS:", session['address']
+        print "SESSION INVOICE:", session['invoice']
+        return redirect(url_for('confirm_payment'))
+    addresses = Address.get(g.user)
+    return render_template('address.html',
+        form=form, invoice=invoice, workspace=workspace, addresses=addresses)
 
-@app.route('/address/select/<aid>')
+
+@app.route('/<workspace>/invoices/<invoice>/address/select/<aid>', methods=['GET', 'POST'])
+@load_models(
+    (Workspace, {'name': 'workspace'}, 'workspace'),
+    (Invoice, {'url_name': 'invoice', 'workspace': 'workspace'}, 'invoice'),
+    (Address, {'hashkey': 'aid'}, 'address')
+    )
 @lastuser.requires_login
-def select_existing_address(aid):
+def select_existing_address(workspace, invoice, address):
     """
     Process an existing address.
     """
-    address = Address.objects(hashkey=aid).first()
-    session['address'] = getattr(address, 'hashkey', None)
-    ino = session['invoice']
-    # Do something about empty invoice number
-    invoice = Invoice.objects(id=ino).first()
-    # Do something about empty invoice
-    #Save the address details into the invoice
-    for suffix in ['address1', 'address2', 'city', 'state', 'country',
-    'postal_code']:
-        setattr(invoice, ''.join(['billing_', suffix]), getattr(address,
-            suffix))
-        setattr(invoice, ''.join(['shipping_', suffix]), getattr(address,
-            suffix))
-    invoice.name = address.name
-    invoice.telephone = address.phone
-    invoice.save()
-    return redirect(url_for('select_payment'))
+    session['workspace'] = workspace.name
+    session['invoice'] = invoice.id
+    session['address'] = address.hashkey
+    return redirect(url_for('confirm_payment'))
 
-@app.route('/address/delete/<aid>')
+
+
+@app.route('/<workspace>/invoices/<invoice>/billaddress/delete/<aid>', methods=['GET', 'POST'])
+@load_models(
+    (Workspace, {'name': 'workspace'}, 'workspace'),
+    (Invoice, {'url_name': 'invoice', 'workspace': 'workspace'}, 'invoice'),
+    (Address, {'id': 'aid'}, 'address')
+    )
 @lastuser.requires_login
-def delete_address(aid):
+def delete_address(workspace, invoice, address):
     """
     Delete an address
     """
-    address = Address.objects(hashkey=aid).first()
-    address.delete()
-    if request.referrer:
-        next = request.referrer
-    else:
-        next = url_for(index)
-    return redirect()
+    return render_delete_sqla(address, db, title=u"Confirm delete",
+        message=u"Delete Address '%s'?" % address.address,
+        success=u"You have deleted '%s'." % address.address,
+        next=url_for('select_address', workspace=workspace.name, invoice=invoice.url_name))
 
 
-@app.route('/address/edit/<aid>')
+
+@app.route('/address/edit/<aid>', methods=['GET', 'POST'])
 @lastuser.requires_login
-def edit_address(aid, form=None):
-    address = Address.objects(hashkey=aid).first()
-    if form is None:
-        form = AddressForm(obj=address)
-    context = {
-        'form': form,
-        'title': 'Edit Address',
-    }
-    return render_template('edit_address.html', **context)
-
-@app.route('/address/edit/<aid>', methods=['POST'])
-@lastuser.requires_login
-def process_edit_address(aid):
-    """
-    Edit an existing address
-    """
-    address = Address.objects(hashkey=aid).first()
+def edit_address(aid):
+    address = Address.query.filter_by(hashkey=aid).first()
     form = AddressForm(obj=address)
     if form.validate_on_submit():
-        address = Address()
+        if address is None:
+            address=Address()
+            address.user = g.user
+            db.session.add(address)
         form.populate_obj(address)
-        address.user = g.user
-        address.save()
-        return redirect(url_for('select_payment'))
-    else:
-        flash("Please check your details and try again.", 'error')
-        return edit_address(address.hashkey, form=form)
+        db.session.commit()
+        return redirect(url_for('confirm_payment'))
+    return render_template('address.html', 
+        user=g.user, 
+        addresses=Address.query.filter_by(user=g.user),
+        form=form,
+        title='Select Billing Address')
 
-@app.route('/payment')
+
+
+@app.route('/confirm')
 @lastuser.requires_login
-def select_payment():
+def confirm_payment():
     """
     Confirm details and make a payment.
     """
-    ino = session.get('invoice', None)
-    if ino is None:
-        return redirect(url_for('select_address'))
-    invoice = Invoice.objects(id=ino).first()
-    context = {
-        'user': g.user,
-        'invoice': invoice,
-        'title': 'Confirm Details',
-    }
-    return render_template('payment.html', **context)
+    workspace = Workspace.get(session['workspace'])
+    address = Address.get_by_hashkey(session['address']).first()
+    invoice = Invoice.get_by_id(workspace, session['invoice'])
+    return render_template('confirm.html', invoice=invoice, address=address, workflow=invoice.workflow())
+
 
 @app.route('/response/ebs')
 @lastuser.requires_login
@@ -159,42 +124,9 @@ def ebs_response():
     for item in decrypted.split('&'):
         oneitem = item.split('=')
         response_split[oneitem[0]] = oneitem[1]
-    pay = Payment()
-    pay.response = response_split
-    pay.save()
-    context = {
-        'data': data,
-        'response': response_split,
-    }
-    return render_template('thanks.html', **context)
+    payment = Payment()
+    payment.response = response_split
+    db.session.add(payment)
+    db.session.commit()
+    return render_template('thanks.html', data=data, response=response_split)
 
-@app.route('/invoice/create', methods=['POST'])
-@lastuser.requires_login
-def create_invoice():
-    data = json.loads(request.form['data'])
-    total = 0
-    print data['data']
-    for item in data['data']:
-        total += item['cost'] * item['quantity']
-    invoice = Invoice(lineitems=data['data'],
-                      amount=total,
-                      date=datetime.now())
-    invoice.save()
-    return str(url_for('pay_invoice', ino=invoice.id, _external=True))
-
-@app.route('/invoice/pay/<ino>', )
-@lastuser.requires_login
-def pay_invoice(ino = None):
-    if ino is None:
-        return url_for(index)
-    invoice = Invoice.objects(id=ino).first()
-    #TODO: BIG HACK AND SECURITY BUG. Needs to be removed as soon as lastuser stuff is ready
-    invoice.user = g.user
-    invoice.save()
-    if invoice is None:
-        return url_for(index)
-    context = {
-        'invoice': invoice,
-        'user': g.user,
-    }
-    return render_template('pay_invoice.html', **context)
