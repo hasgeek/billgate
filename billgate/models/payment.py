@@ -1,5 +1,4 @@
 from billgate.models import db, BaseMixin
-from billgate.models.transaction import Transaction
 from uuid import uuid4
 from datetime import datetime
 
