@@ -1,0 +1,15 @@
+{% from "macros.html" import newlineitem, lineitem_script with context %}
+{# This template is inserted into an existing page #}
+{{ newlineitem(lineitemform) }}
+{{ lineitem_script() }}
+
+<script type="text/javascript">
+  $(function() {
+    $.ajax("{{ url_for('invoice_itemlisttable', invoice=invoice, workspace=workspace.name) }}", {
+      cache: false,
+      success: function(data) {
+        $("#lineitems-table").replaceWith(data);
+      }
+    });
+  });
+</script>
