@@ -18,6 +18,7 @@
 			{{ address.city }} - {{ address.postal_code }}<br />
 			{{ address.state }}, {{ address.country }} <br />
 			{{ address.phone }}<br />
+            {{ address.email }}
 			<a href="{{ url_for('select_existing_address', workspace=workspace.name, invoice=invoice.url_name, aid=address.hashkey) }}">Use this address</a>&nbsp;|&nbsp;
 			<a href="{{ url_for('delete_address', workspace=workspace.name, invoice=invoice.url_name, aid=address.id) }}">Delete</a>
 			
@@ -70,6 +71,18 @@
      	<h4>{{ form.country.label(class="span2") }}</h4> {{ form.country(class="span4") }}
         {%- for e in form.country.errors %}
          	<p class="help-block">{{ e }}</p>
+        {% endfor %}
+     </div>
+     <div class="span7">
+        <h4>{{ form.phone.label(class="span2") }}</h4> {{ form.phone(class="span4") }}
+        {%- for e in form.phone.errors %}
+            <p class="help-block">{{ e }}</p>
+        {% endfor %}
+     </div>
+     <div class="span7">
+        <h4>{{ form.email.label(class="span2") }}</h4> {{ form.email(class="span4") }}
+        {%- for e in form.email.errors %}
+            <p class="help-block">{{ e }}</p>
         {% endfor %}
      </div>
     

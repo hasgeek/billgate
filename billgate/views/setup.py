@@ -13,10 +13,10 @@ from billgate.models import db
 from billgate.views.login import lastuser, requires_workspace_member, requires_workspace_owner
 
 from billgate.models.category import Category
-from billgate.models.workspace import Workspace
+from billgate.models.workspace import Workspace, CURRENCIES
 
 from billgate.forms.category import CategoryForm
-from billgate.forms.workspace import NewWorkspaceForm, CURRENCIES
+from billgate.forms.workspace import NewWorkspaceForm
 
 
 @app.route('/new', methods=['GET', 'POST'])

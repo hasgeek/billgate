@@ -12,7 +12,7 @@ from billgate.views.login import lastuser, requires_workspace_member
 
 @app.context_processor
 def sidebarvars():
-    if hasattr(g, 'user'):
+    if hasattr(g, 'user') and g.user:
         # More access control?
         org_ids = g.user.organizations_memberof_ids()
     else:

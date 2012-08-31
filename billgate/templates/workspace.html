@@ -4,12 +4,6 @@
 
 <div class="row section">
     <ul class="workspace-details">
-    <a href="{{url_for('workspace_edit', workspace=g.workspace.name) }}"><span class="icon-edit"> Edit details</span></a>
-    </ul>
-</div>
-
-<div class="row section">
-    <ul class="workspace-details">
             <li><span class="icon-home">{{ workspace.fullname }}</span></li>
             <li><span class="icon-envelope">{{ workspace.address|safe }}</span></li>
     </ul>
