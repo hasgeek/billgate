@@ -22,7 +22,7 @@
 <h4>Order Details</h4>
 {{ itemlisttable(invoice, workflow) }}
 <form  method="post" action="https://secure.ebs.in/pg/ma/sale/pay/" name="frmTransaction" id="frmTransaction">
-<input name="account_id" type="hidden" value="{{ config['EBS_ACCOUNT'] }}" />
+<input name="account_id" type="hidden" value="{{ ebs_account }}" />
 <input name="return_url" type="hidden" value="{{ url_for('ebs_response', _external=True)}}?DR={DR}" />
 <input name="mode" type="hidden" value="TEST" />
 <input name="reference_no" type="hidden" value="123" />

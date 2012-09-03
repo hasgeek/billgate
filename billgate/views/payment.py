@@ -109,6 +109,8 @@ def confirm_payment():
     workspace = Workspace.get(session['workspace'])
     address = Address.get_by_hashkey(session['address']).first()
     invoice = Invoice.get_by_id(workspace, session['invoice'])
+    ebs_account = app.config['EBS_ACCOUNT']
+    print("EBS ACCOUNT:", ebs_account)
     return render_template('confirm.html', invoice=invoice, address=address, workflow=invoice.workflow())
 
 
