@@ -1,9 +1,13 @@
 .help-block {
-  text-align: center;
   margin-bottom: 10px;
   margin-top: 0;
 }
 
 .workspace-details {
   list-style: none;
+}
+
+.addressblock {
+  margin-bottom: 15px;
+  margin-left: 30px;
 }

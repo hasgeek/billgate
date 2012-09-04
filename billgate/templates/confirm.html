@@ -1,13 +1,13 @@
-{% extends "layout.html" %}
+{% extends "confirm_layout.html" %}
 {% from "macros.html" import itemlisttable %}
 {% block title %}Confirm and Pay{% endblock %}
 {% block headline %}{% endblock %}
 {% block content %}
 
 <div class="page-header">
-	<h3>Invoice #{{ invoice.url_id }}</h3>
     <h1>{{ self.title() }}</h1>
-</div>
+    <h3>Invoice #{{ invoice.url_id }}</h3>
+</div><br/>
 <div class="row section">
     <div class="span7">
     	<h4>Billing Address</h4>
@@ -22,11 +22,11 @@
 <h4>Order Details</h4>
 {{ itemlisttable(invoice, workflow) }}
 <form  method="post" action="https://secure.ebs.in/pg/ma/sale/pay/" name="frmTransaction" id="frmTransaction">
-<input name="account_id" type="hidden" value="{{ ebs_account }}" />
+<input name="account_id" type="hidden" value="{{ config['EBS_ACCOUNT'] }}" />
 <input name="return_url" type="hidden" value="{{ url_for('ebs_response', _external=True)}}?DR={DR}" />
 <input name="mode" type="hidden" value="TEST" />
 <input name="reference_no" type="hidden" value="123" />
-<input name="amount" type="hidden" value="0.0" />
+<input name="amount" type="hidden" value="{{ invoice.total_value }}" />
 <input name="description" type="hidden" value="Testing Payment" />
 <input name="name" type="hidden" value="{{ address.name }}" />
 <input name="address" type="hidden" value="{{ address.address }}" />

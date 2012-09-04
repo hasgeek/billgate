@@ -5,7 +5,7 @@ from baseframe.forms import render_form, render_redirect, render_delete_sqla, re
 
 from billgate import app
 from billgate.models import db
-from billgate.models import Address, Payment, Invoice, Workspace
+from billgate.models import Address, Payment, PAYMENT_STATUS, Invoice, Workspace
 from billgate.views.login import lastuser
 from billgate.forms import AddressForm
 from flask import render_template, g, flash, json, redirect, url_for, request
@@ -39,6 +39,8 @@ def select_address(invoice, workspace):
         print "SESSION INVOICE:", session['invoice']
         return redirect(url_for('confirm_payment'))
     addresses = Address.get(g.user)
+    for i in invoice.line_items:
+        print "ITEM:", i.description
     return render_template('address.html',
         form=form, invoice=invoice, workspace=workspace, addresses=addresses)
 
@@ -109,9 +111,7 @@ def confirm_payment():
     workspace = Workspace.get(session['workspace'])
     address = Address.get_by_hashkey(session['address']).first()
     invoice = Invoice.get_by_id(workspace, session['invoice'])
-    ebs_account = app.config['EBS_ACCOUNT']
-    print("EBS ACCOUNT:", ebs_account)
-    return render_template('confirm.html', invoice=invoice, address=address, workflow=invoice.workflow())
+    return render_template('confirm.html', invoice=invoice, address=address, workspace=workspace, workflow=invoice.workflow())
 
 
 @app.route('/response/ebs')
@@ -123,12 +123,31 @@ def ebs_response():
     data = b64decode(request.query_string[2:])
     decrypted = crypt(data, app.config['EBS_KEY'])
     response_split = {}
+    status = 1
     for item in decrypted.split('&'):
         oneitem = item.split('=')
         response_split[oneitem[0]] = oneitem[1]
+
+    #determine invoice from session
+    workspace = Workspace.get(session['workspace'])
+    invoice = Invoice.get_by_id(workspace, session['invoice'])
+    address = Address.get_by_hashkey(session['address']).first()
+
+    #pull out relevant info from response
+    message = response_split['ResponseMessage']
+    pg_transaction_id = response_split['TransactionID']
+    status = response_split['ResponseCode']
+
+    #create and save payment
     payment = Payment()
-    payment.response = response_split
     db.session.add(payment)
+    payment.invoice_id = invoice.id
+    payment.response = json.dumps(response_split)
     db.session.commit()
-    return render_template('thanks.html', data=data, response=response_split)
+
+    #if successful, set invoice status as paid
+    print "MESSAGE:", response_split['ResponseMessage']
+
+    # show transaction status
+    return render_template('thanks.html', status=status, invoice=invoice, address=address, workflow=invoice.workflow(), workspace=workspace, message=message, transaction_id=pg_transaction_id)
 

@@ -133,10 +133,14 @@ def invoice(workspace, invoice):
         lineitem.price_before_tax = category.price_before_tax
         lineitem.quantity = lineitemform.quantity.data
         db.session.commit()
-
+        print "1 LINE TOTAL:", lineitem.line_total
+        print "INVOICE TOTAL:", invoice.total_value
         lineitem.update_line_total()
-        invoice.line_items.append(lineitem)
+        print "2 LINE TOTAL:", lineitem.line_total
+        print "INVOICE TOTAL:", invoice.total_value
         invoice.update_total_value()
+        print "4 LINE TOTAL:", lineitem.line_total
+        print "INVOICE TOTAL:", invoice.total_value
         db.session.commit()
         
         if request.is_xhr:

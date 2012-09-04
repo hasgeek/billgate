@@ -1,0 +1,22 @@
+{% extends "baseframe.html" %}
+{% from "baseframe/components.html" import flash_messages with context %}
+{% block messages %}{# Don't use baseframe's messages #}{% endblock %}
+{% block baseheadline %}{# Don't use baseframe's headline #}{% endblock %}
+{% block basecontent %}
+  <div class="row">
+    <div class="span8 print-span12">
+      {{ flash_messages() }}
+      {% block headline %}<div class="page-header"><h1>{{ self.title() }}</h1></div>{% endblock %}
+      {% block content %}{% endblock %}
+    </div>
+    <div class="span4 no-print push-right">
+      <ul class="well nav nav-list section">
+        <li class="nav-header"><span class="icon-shopping-cart">Cart</span></li>
+        {% for i in invoice.line_items %}
+          <li><span class="icon-tag">{{ i.description }} ({{ i.quantity }}) - {{ invoice.currency }} {{ i.line_total|format_currency }} (incl. taxes)</span></a></li>
+        {% endfor %}
+        <li class="nav-header"><span class="icon-tags">Total</span> {{ invoice.currency }} {{ invoice.total_value|format_currency }}</li>
+      </ul>
+    </div>
+  </div>
+{% endblock %}

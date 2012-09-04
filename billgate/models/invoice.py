@@ -64,6 +64,8 @@ class Invoice(BaseScopedIdNameMixin, db.Model):
     __table_args__ = (db.UniqueConstraint('url_id', 'workspace_id'),)
 
     def update_total_value(self):
+        for l in self.line_items:
+            print l.description, l.quantity, l.line_total
         self.total_value = sum([l.line_total for l in self.line_items])
 
     @classmethod

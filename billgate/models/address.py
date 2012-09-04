@@ -263,7 +263,7 @@ class Address(BaseMixin, db.Model):
     user = db.relation(User, backref=db.backref('addresses', cascade='all, delete-orphan'))
 
     #for session persistence
-    hashkey = db.Column(db.Unicode(250), default=unicode(uuid4().hex), nullable=True)
+    hashkey = db.Column(db.Unicode(250), default=lambda:unicode(uuid4().hex), nullable=True)
 
     name = db.Column(db.Unicode(250), default=u'', nullable=True)
     address = db.Column(db.Unicode(1200), default=u'', nullable=True)

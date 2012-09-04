@@ -17,21 +17,6 @@ class Payment(BaseMixin, db.Model):
 
     invoice_id = db.Column(db.Integer, db.ForeignKey('invoice.id'), nullable=True)
 
-    status = db.Column(db.Integer, nullable=False, default=PAYMENT_STATUS.INITIATED)
+    status = db.Column(db.Integer, nullable=False, default=PAYMENT_STATUS.SUBMITTED)
 
     response = db.Column(db.Unicode(1200), default=u'', nullable=True)
-
-
-    def _get_responseAsDict(self):
-        if self.response:
-            return eval(self.response)
-        else:
-            return {} # be careful with None and empty dict
-
-    def _set_responseAsDict(self, value):
-        if value:
-            self.response = str(value)
-        else:
-            self.response = None
-
-    response = property(_get_responseAsDict, _set_responseAsDict)

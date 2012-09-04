@@ -18,9 +18,6 @@
         <a href="{{ url_for('select_address', workspace=workspace.name, invoice=invoice.url_name) }}">
           <button class="btn btn-primary">Pay Now</button>
         </a>
-        <a href="">
-          <button class="btn">Send Email</button>
-        </a>
       </div>
       <br/>
       <div class="section">{{ invoice.description|safe }}</div>
