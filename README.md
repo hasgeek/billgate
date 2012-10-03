@@ -6,3 +6,8 @@ become HasGeek's billing gateway.
 
 [LastUser]: https://github.com/hasgeek/lastuser
 
+Set following properties in settings.py:
+EBS_ACCOUNT
+EBS_KEY
+
+
