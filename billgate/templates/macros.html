@@ -91,22 +91,20 @@
         <th>Item</th>
         <th class="num">Rate</th>
         <th class="num">Quantity</th>
-        <th class="num">Charge</th>
         <th class="num">Tax Rate</th>
         <th class="num">Amount</th>
       </thead>
     <tbody>
-      {% for lineitem in invoice.line_items %}
+      {% for lineitem in invoice.lineitems %}
         <tr>
           <td class="num">{{ loop.index }}</td>
-          <td data-field="item" data-value="{{ lineitem.category.id }}">{{ lineitem.category.title }}</td>
-          <td data-field="rate" data-value="{{ lineitem.category.price_before_tax }}" class="num">{{ lineitem.category.price_before_tax }}</td>
+          <td data-field="item" data-value="{{ lineitem.category_id }}">{{ lineitem.description }}</td>
+          <td data-field="rate" data-value="{{ lineitem.pat }}" class="num">{{ invoice.currency }} {{ lineitem.pat|format_currency }}</td>
           <td data-field="quantity" data-value="{{ lineitem.quantity }}" class="num">{{ lineitem.quantity }}</td>
-          <td data-field="charge" data-value="{{ lineitem.line_amount_before_tax}}" class="num">{{ lineitem.line_amount_before_tax|format_currency }}</td>
-          <td data-field="taxrate" data-value="{{ lineitem.categorytax_rate }}" class="num">{{ lineitem.category.tax_rate }} %</td>
-          <td data-field="total" data-value="{{ lineitem.line_total }}" class="num">{{ lineitem.line_total|format_currency }}
+          <td data-field="taxrate" data-value="{{ lineitem.tax_rate }}" class="num">{{ lineitem.tax_rate }} %</td>
+          <td data-field="total" data-value="{{ lineitem.total }}" class="num">{{ invoice.currency }} {{ lineitem.total|format_currency }}
           {%- if editlinks and workflow.can_edit() %}
-            <a href="{{ url_for('line_item_delete', workspace=invoice.workspace.name, invoice=invoice.url_name, line_item=lineitem.id) }}" class="link-util lineitem-delete no-print" data-id="{{ lineitem.id }}" title="Delete"><i class="icon-remove"></i></a>
+            <a href="{{ url_for('line_item_delete', workspace=invoice.workspace.name, invoice=invoice.url_name, lineitem=lineitem.id) }}" class="link-util lineitem-delete no-print" data-id="{{ lineitem.id }}" title="Delete"><i class="icon-remove"></i></a>
           {%- endif %}
           </td>
         </tr>
@@ -117,8 +115,8 @@
       {% endfor %}
       <tr>
         <th class="num"></th>
-        <th colspan="5">Total</th>
-        <th class="num">{{ invoice.currency }} {{ invoice.total_value|format_currency }}</th>
+        <th colspan="4">Total</th>
+        <th class="num">{{ invoice.currency }} {{ invoice.total|format_currency }}</th>
       </tr>
     </tbody>
   </table>

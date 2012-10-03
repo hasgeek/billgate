@@ -2,13 +2,9 @@ from decimal import Decimal
 from flask import g
 
 from baseframe.forms import RichTextField
-from flask.ext.wtf import Form, TextField, SelectField, IntegerField, ValidationError, QuerySelectField, Required, Optional
+from flask.ext.wtf import Form, TextField, SelectField, IntegerField, ValidationError, Required, Optional
 
-from coaster import simplify_text
-
-from billgate.models.category import Category
-from billgate.models.invoice import Invoice
-from billgate.models.line_item import LineItem
+from billgate.models.lineitem import LineItem
 from billgate.models.workspace import CURRENCIES
 
 __all__ = ['InvoiceForm', 'LineItemForm', 'WorkflowForm', 'ReviewForm']
@@ -20,11 +16,14 @@ class InvoiceForm(Form):
     """
     title = TextField(u"Title", validators=[Required()],
         description=u"What is this invoice for?")
+    addressee = TextField(u"Addressed To", validators=[Required()],
+        description=u"Person/Organization this invoice is addressed to")
     description = RichTextField(u"Description", validators=[Optional()],
         description=u"Notes on the Invoice. Add payment terms here.")
     currency = SelectField(u"Currency", validators=[Required()],
         description=u"Currency for items in this invoice",
         choices=CURRENCIES, default='INR')
+
 
 class LineItemForm(Form):
     """
@@ -46,6 +45,7 @@ class LineItemForm(Form):
     def validate_quantity(self, field):
         if field.data < Decimal('0.01'):
             raise ValidationError("Quantity should be more than zero")
+
 
 class WorkflowForm(Form):
     """

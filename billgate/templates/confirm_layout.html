@@ -3,25 +3,22 @@
 {% block messages %}{# Don't use baseframe's messages #}{% endblock %}
 {% block baseheadline %}{# Don't use baseframe's headline #}{% endblock %}
 {% block basecontent %}
-  <div class="row section">
-    <div class="span8 print-span12">
+
       {{ flash_messages() }}
-      {% block headline %}<div class="page-header"><h1>{{ self.title() }}</h1></div>{% endblock %}
+      {% block headline %}<div class="page-header"><h1>{{ self.title() }}</h1><h2>{{ invoice.addressee }}</h2></div>{% endblock %}
       {% block content %}{% endblock %}
-    </div>
+
+    <!--
     <div class="span4 no-print push-right">
       <ul class="well nav nav-list section">
-        <li><span class="icon-user">{{ workspace.fullname }}</span></li>
+        <li><span class="icon-user">by {{ workspace.fullname }}</span></li>
         <li><span class="icon-envelope">{{ workspace.address|safe }}</span></li>
           {% if workspace.pan %} <li><span class="icon-certificate">PAN: {{ workspace.pan }}</span></li> {% endif %}
           {% if workspace.tan %} <li><span class="icon-certificate">TAN: {{ workspace.tan }}</span></li> {% endif %}
           {% if workspace.tin %} <li><span class="icon-certificate">TIN: {{ workspace.tin }}</span></li> {% endif %}
           {% if workspace.cin %} <li><span class="icon-certificate">CIN: {{ workspace.cin }}</span></li> {% endif %}
         <li><span class="icon-calendar">{{ invoice.datetime|longdate }}</span></li>
-        <li><span class="icon-hand-right">We will email you this invoice and transaction details along with access to your purchase once you Confirm and Pay</span></li>
-        <li><span class="icon-hand-right">We do not require a print-out of this invoice to identify you at our events. Please only carry a valid photo ID card</span></li>
-
       </ul>
-    </div>
+    </div>-->
   </div>
 {% endblock %}

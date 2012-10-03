@@ -27,7 +27,7 @@
                   <td><a href="{{ invoicelink }}">#{{ i.url_id }}</a></td>
                   <td><a href="{{ invoicelink }}">{{ i.title }}</a></td>
                   <td><a href="{{ invoicelink }}">{{ i.user.fullname }}</a></td>
-                  <td class="num"><a href="{{ invoicelink }}">{{ i.total_value|format_currency }}</a></td>
+                  <td class="num"><a href="{{ invoicelink }}">{{ i.total|format_currency }}</a></td>
                   <td><a href="{{ invoicelink }}">{{ i.datetime|longdate }}</a></td>
                 </tr>
               {% else %}

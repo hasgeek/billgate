@@ -5,7 +5,7 @@ from baseframe.forms import render_form, render_redirect, render_delete_sqla, re
 
 from billgate import app
 from billgate.models import db
-from billgate.models import Address, Payment, PAYMENT_STATUS, Invoice, Workspace
+from billgate.models import Address, Payment, PAYMENT_STATUS, Invoice, Workspace, INVOICE_STATUS
 from billgate.views.login import lastuser
 from billgate.forms import AddressForm
 from flask import render_template, g, flash, json, redirect, url_for, request
@@ -15,7 +15,7 @@ from billgate.rc4 import crypt
 from datetime import datetime
 
 
-@app.route('/<workspace>/invoices/<invoice>/billaddress', methods=['GET', 'POST'])
+@app.route('/<workspace>/invoices/<invoice>/pay', methods=['GET', 'POST'])
 @load_models(
     (Workspace, {'name': 'workspace'}, 'workspace'),
     (Invoice, {'url_name': 'invoice', 'workspace': 'workspace'}, 'invoice')
@@ -39,7 +39,7 @@ def select_address(invoice, workspace):
         print "SESSION INVOICE:", session['invoice']
         return redirect(url_for('confirm_payment'))
     addresses = Address.get(g.user)
-    for i in invoice.line_items:
+    for i in invoice.lineitems:
         print "ITEM:", i.description
     return render_template('address.html',
         form=form, invoice=invoice, workspace=workspace, addresses=addresses)
@@ -145,9 +145,9 @@ def ebs_response():
     payment.response = json.dumps(response_split)
     db.session.commit()
 
-    #if successful, set invoice status as paid
-    print "MESSAGE:", response_split['ResponseMessage']
+    if status == '0':
+        invoice.status = INVOICE_STATUS.PAID
+    db.session.commit()
 
     # show transaction status
-    return render_template('thanks.html', status=status, invoice=invoice, address=address, workflow=invoice.workflow(), workspace=workspace, message=message, transaction_id=pg_transaction_id)
-
+    return render_template('confirm.html', status=status, invoice=invoice, address=address, workflow=invoice.workflow(), workspace=workspace, message=message, transaction_id=pg_transaction_id)

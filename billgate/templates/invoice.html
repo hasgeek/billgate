@@ -5,15 +5,15 @@
 {% block content %}
   <div class="row section">
     <div class="span6 print-span8">
-      {%- if workflow.proforma() and invoice.user == g.user %}
+      {%- if workflow.estimate() and invoice.user == g.user %}
         <div class="alert alert-info no-print">
           <a class="close" data-dismiss="alert">&times;</a>
-          You cannot edit this invoice because it is awaiting review by a reviewer. 
+          You cannot edit this invoice because it is awaiting review by a reviewer However, if accepted offline, you can raise a formal invoice. 
         </div>
       {%- endif %}
 
       <div class="page-header">
-        <h3>Invoice #{{ invoice.url_id }}</h3>
+        <h3>Invoice #{{ invoice.url_id }}: {{ invoice.addressee }}</h3>
         <h1>{{ self.title() }} </h1>
         <a href="{{ url_for('select_address', workspace=workspace.name, invoice=invoice.url_name) }}">
           <button class="btn btn-primary">Pay Now</button>
@@ -23,8 +23,10 @@
       <div class="section">{{ invoice.description|safe }}</div>
     </div>
     <div class="span3 print-span4">
+        <h4>Creator</h4>
         <ul class="well nav nav-list section">
-            <li><span class="icon-user">{{ workspace.fullname }}</span></li>
+            <li><span class="icon-user">{{ invoice.user.fullname }}</span>
+            <li><span class="icon-user"> for {{ workspace.fullname }}</span></li>
             <li><span class="icon-envelope">{{ workspace.address|safe }}</span></li>
             {% if workspace.pan %} <li><span class="icon-certificate">PAN: {{ workspace.pan }}</span></li> {% endif %}
             {% if workspace.tan %} <li><span class="icon-certificate">TAN: {{ workspace.tan }}</span></li> {% endif %}

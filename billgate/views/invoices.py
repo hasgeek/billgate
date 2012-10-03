@@ -3,24 +3,21 @@
 """
 Create and Manage Invoices
 """
-from flask import g, flash, url_for, render_template, request, redirect, abort, Response
-import json as simplejson
-import sys
-import urllib2
+from flask import g, flash, url_for, render_template, request, redirect, abort, jsonify
 from werkzeug.datastructures import MultiDict
 from coaster.views import load_model, load_models
 from coaster import format_currency as coaster_format_currency
-from baseframe.forms import render_form, render_redirect, render_delete_sqla, render_message, ConfirmDeleteForm
+from baseframe.forms import render_form, render_redirect, render_delete_sqla, ConfirmDeleteForm
 
 from billgate import app
 
 from billgate.models import db
 from billgate.models.workspace import Workspace
 from billgate.models.category import Category, CATEGORY_STATUS
-from billgate.models.invoice import Invoice
-from billgate.models.line_item import LineItem
-from billgate.views.workflows import InvoiceWorkflow
+from billgate.models.invoice import Invoice, INVOICE_STATUS
+from billgate.models.lineitem import LineItem
 
+from billgate.views.workflows import InvoiceWorkflow
 from billgate.views.login import lastuser, requires_workspace_member, requires_workspace_owner
 
 from billgate.forms.invoice import InvoiceForm, LineItemForm
@@ -29,6 +26,7 @@ from billgate.forms.invoice import InvoiceForm, LineItemForm
 @app.template_filter('format_currency')
 def format_currency(value):
     return coaster_format_currency(value, decimals=2)
+
 
 def available_invoices(workspace, user=None):
     if user is None:
@@ -44,7 +42,6 @@ def available_invoices(workspace, user=None):
     return query
 
 
-
 @app.route('/<workspace>/invoices/new', methods=['GET', 'POST'])
 @load_model(Workspace, {'name': 'workspace'}, 'workspace')
 @requires_workspace_owner
@@ -52,42 +49,46 @@ def invoice_new(workspace):
     form = InvoiceForm(prefix='invoice')
     return invoice_edit_internal(workspace, form)
 
-#TBD: syntax for POST?
+
+@app.route('/api/newinvoice', methods=['GET', 'POST'])
 @lastuser.resource_handler('invoice/new')
-def api_invoice_new(data):
-    workspace = Workspace.query.get(data.get('workspace', 'hasgeek'))
-    user = User.query.get(data.get('user_id', None))
-    title = data.get('title', None)
-    line_items = data.get('lines', None)
+def api_invoice_new(callerinfo):
+    workspace = request.args.get('workspace', app.config['DEFAULT_WORKSPACE'])
+    title = request.json['title']
+    return prepare_invoice(workspace, request.json['lineitems'], title)
 
-    # Do we require user to be logged in? 
-    if user is None:
-        abort(403)
 
-    if line_items is None:
-        abort(400) 
-    
-    # TBD: REVIEW What is the protocol for error handling wrt missing data?
-    invoice = Invoice(workspace=workspace.name, user=user)
+def prepare_invoice(workspace_name, lineitems, title):
+    workspace = Workspace.get(workspace_name)
+    if lineitems is None:
+        return jsonify({'error': 'No line items specified'})
+
+    invoice = Invoice(workspace=workspace, user=g.user, status=INVOICE_STATUS.ESTIMATE)
     invoice.title = title
     invoice.make_name()
-    for idx, l in enumerate(line_items):
+    invoice.addressee = invoice.user.fullname
+    db.session.commit()
+    for idx, l in enumerate(lineitems):
         lineitem = LineItem()
         db.session.add(lineitem)
 
         lineitem.invoice_id = invoice.id
-        lineitem.category_id = l.get('item_code', None)
-        lineitem.description = l.get('description', None)
-        lineitem.tax_rate = l.get('tax', None)
-        lineitem.price_before_tax = l.get('pbt', None)
+        lineitem.category_id = l.get('category_id', None)
+        lineitem.description = l.get('event', None) + ' ' + l.get('category_desc', None)
+        lineitem.tax_rate = l.get('tax_rate', None)
+        lineitem.pat = l.get('pat', None)
         lineitem.quantity = l.get('quantity', None)
         db.session.commit()
 
-        lineitem.update_line_total()
-        invoice.line_items.append(lineitem)
-        invoice.update_total_value()
+        lineitem.update_total()
+        invoice.update_total()
         db.session.commit()
-    return jsonify(200, workspace=workspace, invoice=invoice.id, url=url_for('select_address', workspace=workspace.name, invoice=invoice.url_name))
+    return jsonify(
+        invoice=invoice.url_name,
+        url=app.config['SITE_URL'] + url_for('select_address',
+        workspace=workspace.name,
+        invoice=invoice.url_name))
+
 
 def invoice_edit_internal(workspace, form, invoice=None, workflow=None):
     if form.validate_on_submit():
@@ -102,7 +103,6 @@ def invoice_edit_internal(workspace, form, invoice=None, workflow=None):
         return redirect(url_for('invoice', workspace=workspace.name, invoice=invoice.url_name), code=303)
     return render_template('invoice_new.html',
         workspace=workspace, form=form, invoice=invoice, workflow=workflow)
-
 
 
 @app.route('/<workspace>/invoices/<invoice>', methods=['GET', 'POST'])
@@ -127,28 +127,23 @@ def invoice(workspace, invoice):
 
         lineitem.invoice_id = lineitemform.invoice.id
         lineitem.category_id = lineitemform.category.data
-        category = Category.get_by_id(workspace, lineitemform.category.data).first()
+        category = Category.get_by_id(workspace, lineitem.category_id).first()
         lineitem.description = category.title
         lineitem.tax_rate = category.tax_rate
-        lineitem.price_before_tax = category.price_before_tax
+        lineitem.pat = category.pat
         lineitem.quantity = lineitemform.quantity.data
         db.session.commit()
-        print "1 LINE TOTAL:", lineitem.line_total
-        print "INVOICE TOTAL:", invoice.total_value
-        lineitem.update_line_total()
-        print "2 LINE TOTAL:", lineitem.line_total
-        print "INVOICE TOTAL:", invoice.total_value
-        invoice.update_total_value()
-        print "4 LINE TOTAL:", lineitem.line_total
-        print "INVOICE TOTAL:", invoice.total_value
+
+        lineitem.update_total()
+        invoice.update_total()
         db.session.commit()
-        
+
         if request.is_xhr:
             lineitemform = LineItemForm(MultiDict())
             lineitemform.category.choices = [(c.id, c.title) for c in Category.get_by_status(workspace, CATEGORY_STATUS.LIVE)]
-            return render_template("lineitem.html", workspace=workspace, invoice=invoice.url_name, lineitemform=lineitemform )
+            return render_template("lineitem.html", workspace=workspace, invoice=invoice.url_name, lineitemform=lineitemform)
         else:
-            return redirect(url_for('invoice', workspace=workspace.name, invoice=invoice.url_name, lineitemform=lineitemform, canedit=canedit), code=303)
+            return redirect(url_for('invoice', workspace=workspace.name, invoice=invoice.url_name, lineitemform=lineitemform), code=303)
     if request.is_xhr:
         return render_template("lineitem.html",  workspace=workspace, invoice=invoice, lineitemform=lineitemform)
     return render_template('invoice.html',
@@ -227,14 +222,14 @@ def invoice_delete(workspace, invoice):
         next=url_for('invoice_list', workspace=workspace.name))
 
 
-@app.route('/<workspace>/invoices/<invoice>/<line_item>/delete', methods=['GET', 'POST'])
+@app.route('/<workspace>/invoices/<invoice>/<lineitem>/delete', methods=['GET', 'POST'])
 @load_models(
     (Workspace, {'name': 'workspace'}, 'workspace'),
     (Invoice, {'url_name': 'invoice', 'workspace': 'workspace'}, 'invoice'),
-    (LineItem, {'invoice': 'invoice', 'id': 'line_item'}, 'line_item')
+    (LineItem, {'invoice': 'invoice', 'id': 'lineitem'}, 'lineitem')
     )
 @requires_workspace_member
-def line_item_delete(workspace, invoice, line_item):
+def line_item_delete(workspace, invoice, lineitem):
     workflow = invoice.workflow()
     if not workflow.can_view():
         abort(403)
@@ -243,14 +238,14 @@ def line_item_delete(workspace, invoice, line_item):
     form = ConfirmDeleteForm()
     if form.validate_on_submit():
         if 'delete' in request.form:
-            db.session.delete(line_item)
+            db.session.delete(lineitem)
             db.session.commit()
-            invoice.update_total_value()
+            invoice.update_total()
             db.session.commit()
         return redirect(url_for('invoice', workspace=workspace.name, invoice=invoice.url_name), code=303)
     return render_template('baseframe/delete.html', form=form, title=u"Confirm delete",
         message=u"Delete line item '%s' for %s %s?" % (
-            line_item.category.title, invoice.currency, format_currency(line_item.line_total)))
+            lineitem.description, invoice.currency, format_currency(lineitem.total)))
 
 
 @app.route('/<workspace>/invoices/<invoice>/submit', methods=['POST'])
@@ -261,7 +256,7 @@ def line_item_delete(workspace, invoice, line_item):
 @requires_workspace_member
 def invoice_submit(workspace, invoice):
     wf = invoice.workflow()
-    if wf.document.line_items == []:
+    if wf.document.lineitems == []:
         flash(u"This invoice does not list any line items.", 'error')
         return redirect(url_for('invoice', workspace=workspace.name, invoice=invoice.url_name), code=303)
     wf.submit()
@@ -278,7 +273,7 @@ def invoice_submit(workspace, invoice):
 @requires_workspace_member
 def invoice_resubmit(workspace, invoice):
     wf = invoice.workflow()
-    if wf.document.line_items == []:
+    if wf.document.lineitems == []:
         flash(u"This invoice does not list any line items.", 'error')
         return redirect(url_for('invoice', workspace=workspace.name, invoice=invoice.url_name), code=303)
     wf.resubmit()
@@ -358,8 +353,6 @@ def invoice_due(workspace, invoice):
     return redirect(url_for('invoice_list', workspace=workspace.name), code=303)
 
 
-
-
 @app.route('/<workspace>/invoices/<invoice>/paid', methods=['POST'])
 @load_models(
     (Workspace, {'name': 'workspace'}, 'workspace'),
@@ -372,6 +365,3 @@ def invoice_paid(workspace, invoice):
     db.session.commit()
     flash(u"Invoice '%s' has been marked paid" % invoice.title, 'success')
     return redirect(url_for('invoice_list', workspace=workspace.name), code=303)
-
-
-

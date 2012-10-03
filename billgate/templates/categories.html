@@ -18,7 +18,7 @@
         <tr>
           <th>#</th>
           <th>Title</th>
-          <th class="num">Price Before Tax</th>
+          <th class="num">Price After Tax</th>
           <th class="num">Tax Rate</th>
           <th class="num">No. Available</th>
           <th>Status</th>
@@ -30,7 +30,7 @@
           <tr>
             <td>#{{ i.url_id }}</td>
             <td>{{ i.title }}</td>
-            <td class="num">{{ i.price_before_tax }}</td>
+            <td class="num">Rs. {{ i.pat|format_currency }}</td>
             <td class="num">{{ i.tax_rate }}</td>
             <td class="num">{{ i.nos_available }}</td>
             <td>{{ i.status }}</td>

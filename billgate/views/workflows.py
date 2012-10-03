@@ -16,19 +16,19 @@ class InvoiceWorkflow(DocumentWorkflow):
     state_attr = 'status'
 
     draft = WorkflowState(INVOICE_STATUS.DRAFT, title=u"Draft")
-    proforma = WorkflowState(INVOICE_STATUS.PROFORMA, title=u"Proforma")
-    review = WorkflowState(INVOICE_STATUS.REVIEW, title=u"Returned for review") # for review by seller
-    accepted = WorkflowState(INVOICE_STATUS.ACCEPTED, title=u"Accepted") # by purchaser
-    rejected = WorkflowState(INVOICE_STATUS.REJECTED, title=u"Rejected") # by purchaser
-    withdrawn = WorkflowState(INVOICE_STATUS.WITHDRAWN, title=u"Withdrawn") # by seller
-    due = WorkflowState(INVOICE_STATUS.DUE, title=u"Due")
+    estimate = WorkflowState(INVOICE_STATUS.ESTIMATE, title=u"Estimate")  # proforma invoice
+    review = WorkflowState(INVOICE_STATUS.REVIEW, title=u"Returned for review")  # for review by seller
+    accepted = WorkflowState(INVOICE_STATUS.ACCEPTED, title=u"Accepted")  # by purchaser
+    rejected = WorkflowState(INVOICE_STATUS.REJECTED, title=u"Rejected")  # by purchaser
+    withdrawn = WorkflowState(INVOICE_STATUS.WITHDRAWN, title=u"Withdrawn")  # by seller
+    due = WorkflowState(INVOICE_STATUS.DUE, title=u"Due")  # formal invoice due
     paid = WorkflowState(INVOICE_STATUS.PAID, title=u"Paid")
 
     #: States in which an owner/seller can edit
     editable = WorkflowStateGroup([draft, review], title=u"Editable")
 
     #: States in which a reviewer/purchaser can view
-    reviewable = WorkflowStateGroup([proforma, review, accepted, rejected, due, paid],
+    reviewable = WorkflowStateGroup([estimate, review, accepted, rejected, due, paid],
                                     title=u"Reviewable")
 
     def permissions(self):
@@ -41,20 +41,19 @@ class InvoiceWorkflow(DocumentWorkflow):
         base_permissions.extend(lastuser.permissions())
         return base_permissions
 
-
-    @draft.transition(proforma, 'owner', title=u"Submit", category="primary",
+    @draft.transition(estimate, 'owner', title=u"Submit", category="primary",
         description=u"Submit this invoice to a reviewer? You cannot "
-        "edit this invoice after it has been submitted as Proforma Invoice.",
+        "edit this invoice after it has been submitted as Estimate Invoice.",
         view='invoice_submit')
     def submit(self):
         """
-        Submit the invoice as proforma.
+        Submit the invoice as estimate.
         """
         # Update timestamp
         self.document.datetime = datetime.utcnow()
         # TODO: Notify reviewers
 
-    @proforma.transition(due, 'owner', title=u"Raise Invoice", category="success",
+    @estimate.transition(due, 'owner', title=u"Raise Invoice", category="success",
         description=u"Mark this invoice as due? "
             u"This will raise a formal invoice and it cannot be edited further.",
         view='invoice_due')
@@ -67,22 +66,20 @@ class InvoiceWorkflow(DocumentWorkflow):
         # TODO: Notify reviewer of due date
         pass
 
-    @review.transition(proforma, 'owner', title=u"Submit", category="primary",
+    @review.transition(estimate, 'owner', title=u"Submit", category="primary",
         description=u"Resubmit this invoice to a reviewer? You cannot "
-        "edit this invoice after it has been submitted as Proforma Invoice.",
+        "edit this invoice after it has been submitted as Estimate Invoice.",
         view='invoice_resubmit')
     def resubmit(self):
         """
-        Submit the invoice as proforma.
+        Submit the invoice as estimate.
         """
         # Update timestamp
         self.document.datetime = datetime.utcnow()
         # TODO: Notify reviewers
 
-
-
-    @proforma.transition(accepted, 'reviewer', title=u"Accept", category="primary",
-        description=u"Accept this proforma invoice and queue it for payments?",
+    @estimate.transition(accepted, 'reviewer', title=u"Accept", category="primary",
+        description=u"Accept this estimate invoice and queue it for payments?",
         view='invoice_accept')
     def accept(self, reviewer):
         """
@@ -91,9 +88,7 @@ class InvoiceWorkflow(DocumentWorkflow):
         # TODO: Notify owner of acceptance
         self.document.reviewer = reviewer
 
-
-
-    @proforma.transition(review, 'reviewer', title=u"Return for review", category="warning",
+    @estimate.transition(review, 'reviewer', title=u"Return for review", category="warning",
         description=u"Return this invoice to the submitter for review?",
         view='invoice_return', form=ReviewForm)
     def return_for_review(self, reviewer, notes):
@@ -104,8 +99,7 @@ class InvoiceWorkflow(DocumentWorkflow):
         self.document.reviewer = reviewer
         self.document.notes = notes
 
-
-    @proforma.transition(rejected, 'reviewer', title=u"Reject", category="danger",
+    @estimate.transition(rejected, 'reviewer', title=u"Reject", category="danger",
         description=u"Reject this invoice? Rejected invoices are archived but cannot be processed again.",
         view='invoice_reject', form=ReviewForm)
     def reject(self, reviewer, notes):
@@ -116,7 +110,6 @@ class InvoiceWorkflow(DocumentWorkflow):
         self.document.reviewer = reviewer
         self.document.notes = notes
 
-
     @review.transition(withdrawn, 'owner', title=u"Withdraw", category="danger",
         description=u"Withdraw this invoice? Withdrawn invoices are archived but cannot be processed again.",
         view='invoice_withdraw')
@@ -125,7 +118,6 @@ class InvoiceWorkflow(DocumentWorkflow):
         Withdraw invoice.
         """
         pass
-
 
     @accepted.transition(due, 'owner', title=u"Raise Invoice", category="success",
         description=u"Mark this invoice as due? "
@@ -138,7 +130,6 @@ class InvoiceWorkflow(DocumentWorkflow):
         # TODO: Notify reviewer who pays.
         pass
 
-
     @due.transition(paid, 'owner', title=u"Mark Paid", category="success",
         description=u"Mark this invoice as paid? "
             u"This will mark the invoice as paid, after which it will be archived.",
@@ -149,7 +140,6 @@ class InvoiceWorkflow(DocumentWorkflow):
         """
         # TODO: Notify reviewer who pays.
         self.document.datetime = datetime.utcnow()
-
 
     def can_view(self):
         """

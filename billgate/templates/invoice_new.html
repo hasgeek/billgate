@@ -20,6 +20,13 @@
           <p class="help-block">{{ e }}</p>
         {% endfor %}
         <div class="section">
+          <h3>{{ form.addressee.label.text }} <small>{{ form.addressee.description }} (required)</small></h3>
+          <span class="control-group{% if form.description.errors %} error{% endif %}">{{ form.addressee(class="span6") }}</span>
+          {%- for e in form.addressee.errors %}
+            <p class="help-block">{{ e }}</p>
+          {% endfor %}
+        </div>
+        <div class="section">
           <h3>{{ form.description.label.text }} <small>{{ form.description.description }} (optional)</small></h3>
           <span class="control-group{% if form.description.errors %} error{% endif %}">{{ form.description(class="span6") }}</span>
           {%- for e in form.description.errors %}
@@ -41,8 +48,10 @@
         </div>
       </div>
       <div class="span3">
+        <h4>Creator</h4>
         <ul class="well nav nav-list section">
-            <li><span class="icon-home">{{ workspace.fullname }}</span></li>
+            <li><span class="icon-user">{{ g.user.fullname }}</span>
+            <li><span class="icon-home"> for {{ workspace.fullname }}</span></li>
             <li><span class="icon-envelope">{{ workspace.address|safe }}</span></li>
             {% if workspace.pan %} <li><span class="icon-certificate">PAN: {{ workspace.pan }}</span></li> {% endif %}
             {% if workspace.tan %} <li><span class="icon-certificate">TAN: {{ workspace.tan }}</span></li> {% endif %}

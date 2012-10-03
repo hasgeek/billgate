@@ -1,19 +1,17 @@
 from decimal import Decimal
 from datetime import datetime
 
-from billgate import app
 from billgate.models import db, BaseScopedIdNameMixin
 from billgate.models.user import User
 from billgate.models.workspace import Workspace
 
 __all__ = ['INVOICE_STATUS', 'Invoice']
 
-# --- Constants ---------------------------------------------------------------
 
 class INVOICE_STATUS:
     STUB = 0
     DRAFT = 1
-    PROFORMA = 2
+    ESTIMATE = 2
     REVIEW = 3
     ACCEPTED = 4
     REJECTED = 5
@@ -22,7 +20,6 @@ class INVOICE_STATUS:
     OVERDUE = 8
     PAID = 9
 
-# --- Models ------------------------------------------------------------------
 
 class Invoice(BaseScopedIdNameMixin, db.Model):
     """
@@ -39,7 +36,10 @@ class Invoice(BaseScopedIdNameMixin, db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship(User, primaryjoin=user_id == User.id,
         backref=db.backref('invoices', cascade='all, delete-orphan'))
-    
+
+    #: If created internally using Billgate UI, Person/Organization to whom this invoice is addressed
+    addressee = db.Column(db.Unicode(250), default=u'', nullable=True)
+
     #: will update each time Invoice changes status
     datetime = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
@@ -52,21 +52,23 @@ class Invoice(BaseScopedIdNameMixin, db.Model):
     #: Reviewer
     reviewer_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     reviewer = db.relationship(User, primaryjoin=reviewer_id == User.id,
-        backref=db.backref('reviewed_invoices', cascade='all'))  # No delete-orphan
+        backref=db.backref('reviewed_invoices'))
+
     #: Reviewer notes
     notes = db.Column(db.Text, nullable=False, default=u'')  # HTML notes
 
     #: pending state carries tax liabilities for the generating organization
     status = db.Column(db.Integer, default=INVOICE_STATUS.DRAFT, nullable=False)
 
-    total_value = db.Column(db.Numeric(10, 2), nullable=False, default=Decimal('0.0'))
+    total = db.Column(db.Numeric(10, 2), nullable=False, default=Decimal('0.0'))
 
     __table_args__ = (db.UniqueConstraint('url_id', 'workspace_id'),)
 
-    def update_total_value(self):
-        for l in self.line_items:
-            print l.description, l.quantity, l.line_total
-        self.total_value = sum([l.line_total for l in self.line_items])
+    def update_total(self):
+        for i in self.lineitems:
+            if i.total is None:
+                i.total = Decimal('0.0')
+        self.total = sum([Decimal(l.total) for l in self.lineitems])
 
     @classmethod
     def getw(cls, workspace):
@@ -75,5 +77,3 @@ class Invoice(BaseScopedIdNameMixin, db.Model):
     @classmethod
     def get_by_id(cls, workspace, id):
         return cls.query.filter_by(workspace=workspace, id=id).first()
-
-

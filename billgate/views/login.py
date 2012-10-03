@@ -3,7 +3,6 @@
 from functools import wraps
 
 from flask import g, Response, redirect, flash, url_for, request, abort
-from flask.ext.lastuser import LastUser
 from flask.ext.lastuser.sqlalchemy import UserManager
 from coaster.views import get_next_url
 

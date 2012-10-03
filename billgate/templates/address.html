@@ -1,4 +1,4 @@
-{% extends "paylayout.html" %}
+{% extends "pay_layout.html" %}
 {% from 'macros.html' import renderform %}
 {% from "baseframe/forms.html" import richtext_editor %}
 {% block title %}Select a Billing Address{% endblock %}
@@ -7,11 +7,12 @@
 
 <h1>Your Billing Address</h1>
 {% if addresses.count() > 0 %}
-    <h3>Previous Saved Addresses</h3><br/>
-    <div class="span8 row section">
+    
+    <div class="span7 row section">
+        <h3>Previous Saved Addresses</h3><br/>
         <ul>
             {% for address in addresses %}
-                <div class="span2 addressblock">
+                <div class="span2">
                     {{ address.name }}<br />
                     {{ address.address }}<br />
                     {{ address.city }} - {{ address.postal_code }}<br />
@@ -30,41 +31,47 @@
 {% endif %}
 
 <form method="POST">
-<h3>Add a New Address</h3><br/>
+
 {%- if form.errors %}
     <div class="alert alert-error">Please correct the indicated errors</div>
 {%- endif %}
 {{ form.hidden_tag() }}
-<div class="row section">
+<div class="span7 row section">
+    <h3>Add a New Address</h3><br/>
     <div class="span7">
-     	<h4>{{ form.name.label(class="span2") }}</h4> {{ form.name(class="span4") }}
         {%- for e in form.name.errors %}
-         	<span class="help-block">{{ e }}</span>
+            <span class="help-block">{{ e }}</span>
         {% endfor %}
+     	<h4>{{ form.name.label(class="span2") }}</h4> {{ form.name(class="span4") }}
+        
      </div>
      <div class="span7">
-     	<h4>{{ form.address.label(class="span2") }}</h4> {{ form.address(class="span4") }}
         {%- for e in form.address.errors %}
-         	<p class="help-block">{{ e }}</p>
-         {% endfor %}
+            <p class="help-block">{{ e }}</p>
+        {% endfor %}
+     	<h4>{{ form.address.label(class="span2") }}</h4> {{ form.address(class="span4") }}
+        
      </div>
      <div class="span7">
-     	<h4>{{ form.city.label(class="span2") }}</h4> {{ form.city(class="span4") }}
         {%- for e in form.city.errors %}
-         	<p class="help-block">{{ e }}</p>
+            <p class="help-block">{{ e }}</p>
         {% endfor %}
+     	<h4>{{ form.city.label(class="span2") }}</h4> {{ form.city(class="span4") }}
+        
      </div>
      <div class="span7">
-     	<h4>{{ form.state.label(class="span2") }}</h4> {{ form.state(class="span4") }}
         {%- for e in form.state.errors %}
-         	<p class="help-block">{{ e }}</p>
+            <p class="help-block">{{ e }}</p>
         {% endfor %}
+     	<h4>{{ form.state.label(class="span2") }}</h4> {{ form.state(class="span4") }}
+        
      </div>
      <div class="span7">
-     	<h4>{{ form.postal_code.label(class="span2") }}</h4> {{ form.postal_code(class="span4") }}
         {%- for e in form.postal_code.errors %}
-         	<p class="help-block">{{ e }}</p>
+            <p class="help-block">{{ e }}</p>
         {% endfor %}
+     	<h4>{{ form.postal_code.label(class="span2") }}</h4> {{ form.postal_code(class="span4") }}
+        
      </div>
      <div class="span7">
      	<h4>{{ form.country.label(class="span2") }}</h4> {{ form.country(class="span4") }}
@@ -73,24 +80,26 @@
         {% endfor %}
      </div>
      <div class="span7">
-        <h4>{{ form.phone.label(class="span2") }}</h4> {{ form.phone(class="span4") }}
         {%- for e in form.phone.errors %}
             <p class="help-block">{{ e }}</p>
         {% endfor %}
+        <h4>{{ form.phone.label(class="span2") }}</h4> {{ form.phone(class="span4") }}
+        
      </div>
      <div class="span7">
-        <h4>{{ form.email.label(class="span2") }}</h4> {{ form.email(class="span4") }}
         {%- for e in form.email.errors %}
             <p class="help-block">{{ e }}</p>
         {% endfor %}
+        <h4>{{ form.email.label(class="span2") }}</h4> {{ form.email(class="span4") }}
+        
      </div>
-    
-
-</div>
- <div class="form-actions">
+    <div class="span7 form-actions">
           <button type="submit" class="btn btn-primary">Continue</button>
           <a href="{{ url_for('select_address', workspace=workspace.name, invoice=invoice.url_name) }}" class="btn">Cancel</a>
- </div>
+    </div>
+
+</div>
+ 
 </form>
 {% endblock %}
 
