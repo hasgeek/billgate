@@ -10,7 +10,7 @@ SECRET_KEY = 'make this something random'
 #: Timezone
 TIMEZONE = 'Asia/Calcutta'
 #: LastUser server
-LASTUSER_SERVER = 'https://login.hasgeek.com/'
+LASTUSER_SERVER = 'https://auth.hasgeek.com/'
 #: LastUser client id
 LASTUSER_CLIENT_ID = ''
 #: LastUser client secret
@@ -31,3 +31,4 @@ DEFAULT_MAIL_SENDER = ('HasGeek', 'test@example.com')
 ADMINS = []
 #: Log file
 LOGFILE = 'error.log'
+
