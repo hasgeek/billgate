@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "macros.html" import itemlisttable %}
-{% from "baseframe/forms.html" import richtext_editor %}
+{% from "baseframe/forms.html" import tinymce3_editor %}
 {% block title %}{{ invoice.title or "New Invoice"}}{% endblock %}
 {% block headline %}{% endblock %}
 {% block content %}
@@ -105,5 +105,5 @@
 {% endblock %}
 
 {% block footerscripts %}
-  {{ richtext_editor(form.description) }}
+  {{ tinymce3_editor(form.description) }}
 {% endblock %}
