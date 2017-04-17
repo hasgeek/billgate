@@ -46,10 +46,10 @@ def favicon():
 @app.template_filter('shortdate')
 def shortdate(date):
     tz = timezone(app.config['TIMEZONE'])
-    return utc.localize(date).astimezone(tz).strftime('%b %e')
+    return utc.localize(date).astimezone(tz).strftime('%e %b')
 
 
 @app.template_filter('longdate')
 def longdate(date):
     tz = timezone(app.config['TIMEZONE'])
-    return utc.localize(date).astimezone(tz).strftime('%B %e, %Y')
+    return utc.localize(date).astimezone(tz).strftime('%e %B %Y')
