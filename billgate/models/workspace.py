@@ -15,11 +15,11 @@ CURRENCIES = [
 
 class Workspace(BaseNameMixin, db.Model):
     """
-    Workspaces contain categories of items, invoices and payments for a purchase. 
+    Workspaces contain categories of items, invoices and payments for a purchase.
     Workspaces correspond to organizations in LastUser.
     """
     __tablename__ = 'workspace'
-    
+
     userid = db.Column(db.Unicode(22), nullable=False, unique=True)
     currency = db.Column(db.Unicode(3), nullable=False, default=u'INR')
     fullname = db.Column(db.Unicode(250), nullable=False)
