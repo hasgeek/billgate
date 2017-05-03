@@ -1,5 +1,5 @@
-from flask.ext.wtf import Form, TextField, SelectField, TextAreaField, html5
-from flask.ext.wtf import Required
+from flask_wtf import Form, TextField, SelectField, TextAreaField, html5
+from flask_wtf import Required
 from billgate.models.address import countries
 
 

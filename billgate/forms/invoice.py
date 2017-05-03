@@ -2,7 +2,7 @@ from decimal import Decimal
 from flask import g
 
 from baseframe.forms import RichTextField
-from flask.ext.wtf import Form, TextField, SelectField, IntegerField, ValidationError, Required, Optional
+from flask_wtf import Form, TextField, SelectField, IntegerField, ValidationError, Required, Optional
 
 from billgate.models.lineitem import LineItem
 from billgate.models.workspace import CURRENCIES

@@ -1,4 +1,4 @@
-from flask.ext.wtf import Form, TextField, IntegerField, DecimalField, SelectField, Required
+from flask_wtf import Form, TextField, IntegerField, DecimalField, SelectField, Required
 from billgate.models.category import CATEGORY_STATUS_CODES
 
 

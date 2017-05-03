@@ -4,9 +4,9 @@
 import re
 
 from flask import Flask, Markup, escape
-from flask.ext.assets import Environment, Bundle
+from flask_assets import Environment, Bundle
 from baseframe import baseframe, baseframe_js, baseframe_css
-from flask.ext.lastuser import LastUser
+from flask_lastuser import LastUser
 import coaster.app
 
 # First, make an app

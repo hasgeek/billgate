@@ -1,4 +1,4 @@
-from flask.ext.wtf import Form, RadioField, SelectField, TextField, Required, Optional
+from flask_wtf import Form, RadioField, SelectField, TextField, Required, Optional
 from baseframe.forms import RichTextField
 from billgate.models.workspace import CURRENCIES
 
