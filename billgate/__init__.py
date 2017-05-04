@@ -22,11 +22,10 @@ js = Bundle(baseframe_js,
 css = Bundle(baseframe_css, 'css/app.css')
 
 # Configure the app
-def init_for(env):
-    coaster.app.init_app(app, env)
-    lastuser.init_app(app)
-    assets.register('js_all', js)
-    assets.register('css_all', css)
+coaster.app.init_app(app)
+lastuser.init_app(app)
+assets.register('js_all', js)
+assets.register('css_all', css)
 
 # Last, after config, import the models and views
 
