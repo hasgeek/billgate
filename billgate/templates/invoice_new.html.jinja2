@@ -1,6 +1,6 @@
-{% extends "layout.html" %}
-{% from "macros.html" import itemlisttable %}
-{% from "baseframe/forms.html" import tinymce3_editor %}
+{% extends "layout.html.jinja2" %}
+{% from "macros.html.jinja2" import itemlisttable %}
+{% from "baseframe/forms.html.jinja2" import tinymce3_editor %}
 {% block title %}{{ invoice.title or "New Invoice"}}{% endblock %}
 {% block headline %}{% endblock %}
 {% block content %}
@@ -56,7 +56,7 @@
             {% if workspace.pan %} <li><span class="icon-certificate">PAN: {{ workspace.pan }}</span></li> {% endif %}
             {% if workspace.tan %} <li><span class="icon-certificate">TAN: {{ workspace.tan }}</span></li> {% endif %}
             {% if workspace.tin %} <li><span class="icon-certificate">TIN: {{ workspace.tin }}</span></li> {% endif %}
-            {% if workspace.cin %} <li><span class="icon-certificate">CIN: {{ workspace.cin }}</span></li> {% endif %}  
+            {% if workspace.cin %} <li><span class="icon-certificate">CIN: {{ workspace.cin }}</span></li> {% endif %}
             <li><span class="icon-calendar">Created: Today</span></li>
             {%- if invoice %}
               <li><span class="icon-cog">Status: {{ workflow.state.title }}</span></li>

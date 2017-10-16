@@ -71,7 +71,7 @@ def workspace_edit(workspace):
 @load_model(Workspace, {'name': 'workspace'}, 'workspace')
 @requires_workspace_member
 def workspace_view(workspace):
-    return render_template('workspace.html', workspace=workspace)
+    return render_template('workspace.html.jinja2', workspace=workspace)
 
 
 @app.route('/<workspace>/categories/')
@@ -79,8 +79,8 @@ def workspace_view(workspace):
 @requires_workspace_member
 def category_list(workspace):
     categories = Category.get(workspace)
-    return render_template('categories.html', categories=categories)
-    
+    return render_template('categories.html.jinja2', categories=categories)
+
 
 
 @app.route('/<workspace>/categories/new', methods=['GET', 'POST'])
@@ -126,7 +126,7 @@ def category_edit(workspace, category):
     )
 @requires_workspace_member
 def category(workspace, category):
-    return render_template('category.html', category=category)
+    return render_template('category.html.jinja2', category=category)
 
 @app.route('/<workspace>/categories/<category>/delete', methods=['GET', 'POST'])
 @load_models(

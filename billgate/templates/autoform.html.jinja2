@@ -1,0 +1,7 @@
+{% extends "inc/layout.html.jinja2" %}
+{% from "inc/forms.html.jinja2" import renderform, ajaxform %}
+
+
+{% block footerscripts %}
+  {{ ajaxform(formid, request, ajax) }}
+{% endblock %}

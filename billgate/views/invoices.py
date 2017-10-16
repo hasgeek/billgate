@@ -101,7 +101,7 @@ def invoice_edit_internal(workspace, form, invoice=None, workflow=None):
         db.session.commit()
         flash("Created new invoice '%s'." % invoice.title, "success")
         return redirect(url_for('invoice', workspace=workspace.name, invoice=invoice.url_name), code=303)
-    return render_template('invoice_new.html',
+    return render_template('invoice_new.html.jinja2',
         workspace=workspace, form=form, invoice=invoice, workflow=workflow)
 
 
@@ -141,12 +141,12 @@ def invoice(workspace, invoice):
         if request.is_xhr:
             lineitemform = LineItemForm(MultiDict())
             lineitemform.category.choices = [(c.id, c.title) for c in Category.get_by_status(workspace, CATEGORY_STATUS.LIVE)]
-            return render_template("lineitem.html", workspace=workspace, invoice=invoice.url_name, lineitemform=lineitemform)
+            return render_template("lineitem.html.jinja2", workspace=workspace, invoice=invoice.url_name, lineitemform=lineitemform)
         else:
             return redirect(url_for('invoice', workspace=workspace.name, invoice=invoice.url_name, lineitemform=lineitemform), code=303)
     if request.is_xhr:
-        return render_template("lineitem.html",  workspace=workspace, invoice=invoice, lineitemform=lineitemform)
-    return render_template('invoice.html',
+        return render_template("lineitem.html.jinja2",  workspace=workspace, invoice=invoice, lineitemform=lineitemform)
+    return render_template('invoice.html.jinja2',
         workspace=workspace,
         invoice=invoice,
         lineitemform=lineitemform,
@@ -164,7 +164,7 @@ def invoice_itemlisttable(workspace, invoice):
     workflow = invoice.workflow()
     if not workflow.can_view():
         abort(403)
-    return render_template('itemlisttable.html', invoice=invoice, workflow=workflow)
+    return render_template('itemlisttable.html.jinja2', invoice=invoice, workflow=workflow)
 
 
 @app.route('/<workspace>/invoices')
@@ -173,7 +173,7 @@ def invoice_itemlisttable(workspace, invoice):
 def invoice_list(workspace):
     # Sort invoices by status
     invoices = InvoiceWorkflow.sort_documents(available_invoices(workspace).all())
-    return render_template('invoices.html', invoices=invoices, invoicespage=True)
+    return render_template('invoices.html.jinja2', invoices=invoices, invoicespage=True)
 
 
 @app.route('/<workspace>/invoices/<invoice>/edit', methods=['GET', 'POST'])
@@ -187,7 +187,7 @@ def invoice_edit(workspace, invoice):
     if not workflow.can_view():
         abort(403)
     if not workflow.can_edit():
-        return render_template('baseframe/message.html',
+        return render_template('baseframe/message.html.jinja2',
             message=u"You cannot edit this invoice at this time.")
     form = InvoiceForm(obj=invoice)
     return invoice_edit_internal(workspace, form, invoice, workflow)
@@ -215,7 +215,7 @@ def invoice_delete(workspace, invoice):
         abort(403)
     if not workflow.draft():
         # Only drafts can be deleted
-        return render_template('baseframe/message.html', message=u"Only draft invoices can be deleted.")
+        return render_template('baseframe/message.html.jinja2', message=u"Only draft invoices can be deleted.")
     return render_delete_sqla(invoice, db, title=u"Confirm delete",
         message=u"Delete Category '%s'?" % invoice.title,
         success=u"You have deleted '%s'." % invoice.title,
@@ -243,7 +243,7 @@ def line_item_delete(workspace, invoice, lineitem):
             invoice.update_total()
             db.session.commit()
         return redirect(url_for('invoice', workspace=workspace.name, invoice=invoice.url_name), code=303)
-    return render_template('baseframe/delete.html', form=form, title=u"Confirm delete",
+    return render_template('baseframe/delete.html.jinja2', form=form, title=u"Confirm delete",
         message=u"Delete line item '%s' for %s %s?" % (
             lineitem.description, invoice.currency, format_currency(lineitem.total)))
 

@@ -1,5 +1,5 @@
-{% extends "layout.html" %}
-{% from "macros.html" import itemlisttable, newlineitem, lineitem_script, lineitem_table_script %}
+{% extends "layout.html.jinja2" %}
+{% from "macros.html.jinja2" import itemlisttable, newlineitem, lineitem_script, lineitem_table_script %}
 {% block title %}{{ invoice.title }}{% endblock %}
 {% block headline %}{% endblock %}
 {% block content %}
@@ -8,7 +8,7 @@
       {%- if workflow.estimate() and invoice.user == g.user %}
         <div class="alert alert-info no-print">
           <a class="close" data-dismiss="alert">&times;</a>
-          You cannot edit this invoice because it is awaiting review by a reviewer However, if accepted offline, you can raise a formal invoice. 
+          You cannot edit this invoice because it is awaiting review by a reviewer However, if accepted offline, you can raise a formal invoice.
         </div>
       {%- endif %}
 

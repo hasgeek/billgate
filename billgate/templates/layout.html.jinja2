@@ -1,5 +1,5 @@
-{% extends "baseframe.html" %}
-{% from "baseframe/components.html" import flash_messages with context %}
+{% extends "baseframe.html.jinja2" %}
+{% from "baseframe/components.html.jinja2" import flash_messages with context %}
 {% block messages %}{# Don't use baseframe's messages #}{% endblock %}
 {% block baseheadline %}{# Don't use baseframe's headline #}{% endblock %}
 {% block basecontent %}
@@ -18,7 +18,7 @@
         <li><a href="{{ url_for('workspace_new') }}"><span class="icon-plus">New workspace</span></a></li>
 
         {% if g.workspace %}
-        
+
           <li class="nav-header">Item Categories</li>
           <li {%- if categorypage %} class="active"{% endif %}><a href="{{ url_for('category_list', workspace=g.workspace.name) }}"><span class="icon-tags">All Categories</span></a></li>
           {% if 'siteadmin' in permissions -%}
@@ -30,7 +30,7 @@
           {% if 'siteadmin' in permissions -%}
             <li><a href="{{ url_for('invoice_new', workspace=g.workspace.name) }}"><span class="icon-pencil">Create a new invoice...</span></a></li>
           {%- endif %}
-        
+
         {% endif %}
       </ul>
     </div>

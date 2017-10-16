@@ -1,5 +1,5 @@
-{% extends "inc/layout.html" %}
-{% from 'macros.html' import renderform %}
+{% extends "inc/layout.html.jinja2" %}
+{% from 'macros.html.jinja2' import renderform %}
 {% block content %}
 {{ renderform(form, 'addressform', 'Use this address') }}
 {% endblock %}

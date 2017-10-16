@@ -1,12 +1,12 @@
-{% extends "pay_layout.html" %}
-{% from 'macros.html' import renderform %}
+{% extends "pay_layout.html.jinja2" %}
+{% from 'macros.html.jinja2' import renderform %}
 {% block title %}Select a Billing Address{% endblock %}
 {% block headline %}{% endblock %}
 {% block content %}
 
 <h1>Your Billing Address</h1>
 {% if addresses.count() > 0 %}
-    
+
     <div class="span7 row section">
         <h3>Previous Saved Addresses</h3><br/>
         <ul>
@@ -20,7 +20,7 @@
                     {{ address.email }}<br />
                     <a href="{{ url_for('select_existing_address', workspace=workspace.name, invoice=invoice.url_name, aid=address.hashkey) }}">Use this address</a>&nbsp;|&nbsp;
                     <a href="{{ url_for('delete_address', workspace=workspace.name, invoice=invoice.url_name, aid=address.id) }}">Delete</a>
-                    
+
                 </div>
             {% endfor %}
         </ul>
@@ -42,35 +42,35 @@
             <span class="help-block">{{ e }}</span>
         {% endfor %}
      	<h4>{{ form.name.label(class="span2") }}</h4> {{ form.name(class="span4") }}
-        
+
      </div>
      <div class="span7">
         {%- for e in form.address.errors %}
             <p class="help-block">{{ e }}</p>
         {% endfor %}
      	<h4>{{ form.address.label(class="span2") }}</h4> {{ form.address(class="span4") }}
-        
+
      </div>
      <div class="span7">
         {%- for e in form.city.errors %}
             <p class="help-block">{{ e }}</p>
         {% endfor %}
      	<h4>{{ form.city.label(class="span2") }}</h4> {{ form.city(class="span4") }}
-        
+
      </div>
      <div class="span7">
         {%- for e in form.state.errors %}
             <p class="help-block">{{ e }}</p>
         {% endfor %}
      	<h4>{{ form.state.label(class="span2") }}</h4> {{ form.state(class="span4") }}
-        
+
      </div>
      <div class="span7">
         {%- for e in form.postal_code.errors %}
             <p class="help-block">{{ e }}</p>
         {% endfor %}
      	<h4>{{ form.postal_code.label(class="span2") }}</h4> {{ form.postal_code(class="span4") }}
-        
+
      </div>
      <div class="span7">
      	<h4>{{ form.country.label(class="span2") }}</h4> {{ form.country(class="span4") }}
@@ -83,14 +83,14 @@
             <p class="help-block">{{ e }}</p>
         {% endfor %}
         <h4>{{ form.phone.label(class="span2") }}</h4> {{ form.phone(class="span4") }}
-        
+
      </div>
      <div class="span7">
         {%- for e in form.email.errors %}
             <p class="help-block">{{ e }}</p>
         {% endfor %}
         <h4>{{ form.email.label(class="span2") }}</h4> {{ form.email(class="span4") }}
-        
+
      </div>
     <div class="span7 form-actions">
           <button type="submit" class="btn btn-primary">Continue</button>
@@ -98,7 +98,7 @@
     </div>
 
 </div>
- 
+
 </form>
 {% endblock %}
 

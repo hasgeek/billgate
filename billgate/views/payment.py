@@ -41,7 +41,7 @@ def select_address(invoice, workspace):
     addresses = Address.get(g.user)
     for i in invoice.lineitems:
         print "ITEM:", i.description
-    return render_template('address.html',
+    return render_template('address.html.jinja2',
         form=form, invoice=invoice, workspace=workspace, addresses=addresses)
 
 
@@ -94,8 +94,8 @@ def edit_address(aid):
         form.populate_obj(address)
         db.session.commit()
         return redirect(url_for('confirm_payment'))
-    return render_template('address.html', 
-        user=g.user, 
+    return render_template('address.html.jinja2',
+        user=g.user,
         addresses=Address.query.filter_by(user=g.user),
         form=form,
         title='Select Billing Address')
@@ -111,7 +111,7 @@ def confirm_payment():
     workspace = Workspace.get(session['workspace'])
     address = Address.get_by_hashkey(session['address']).first()
     invoice = Invoice.get_by_id(workspace, session['invoice'])
-    return render_template('confirm.html', invoice=invoice, address=address, workspace=workspace, workflow=invoice.workflow())
+    return render_template('confirm.html.jinja2', invoice=invoice, address=address, workspace=workspace, workflow=invoice.workflow())
 
 
 @app.route('/response/ebs')
@@ -150,4 +150,4 @@ def ebs_response():
     db.session.commit()
 
     # show transaction status
-    return render_template('confirm.html', status=status, invoice=invoice, address=address, workflow=invoice.workflow(), workspace=workspace, message=message, transaction_id=pg_transaction_id)
+    return render_template('confirm.html.jinja2', status=status, invoice=invoice, address=address, workflow=invoice.workflow(), workspace=workspace, message=message, transaction_id=pg_transaction_id)
