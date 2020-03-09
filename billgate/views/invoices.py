@@ -7,6 +7,7 @@ from flask import g, flash, url_for, render_template, request, redirect, abort, 
 from werkzeug.datastructures import MultiDict
 from coaster.views import load_model, load_models
 from coaster.utils import format_currency as coaster_format_currency
+from baseframe import request_is_xhr
 from baseframe.forms import render_form, render_redirect, render_delete_sqla, ConfirmDeleteForm
 
 from billgate import app
@@ -138,13 +139,13 @@ def invoice(workspace, invoice):
         invoice.update_total()
         db.session.commit()
 
-        if request.is_xhr:
+        if request_is_xhr():
             lineitemform = LineItemForm(MultiDict())
             lineitemform.category.choices = [(c.id, c.title) for c in Category.get_by_status(workspace, CATEGORY_STATUS.LIVE)]
             return render_template("lineitem.html.jinja2", workspace=workspace, invoice=invoice.url_name, lineitemform=lineitemform)
         else:
             return redirect(url_for('invoice', workspace=workspace.name, invoice=invoice.url_name, lineitemform=lineitemform), code=303)
-    if request.is_xhr:
+    if request_is_xhr():
         return render_template("lineitem.html.jinja2",  workspace=workspace, invoice=invoice, lineitemform=lineitemform)
     return render_template('invoice.html.jinja2',
         workspace=workspace,
